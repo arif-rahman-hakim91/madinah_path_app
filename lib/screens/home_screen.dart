@@ -13,22 +13,48 @@ class HomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text(
-            "ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold
-            ),
+         
+          Row(
+            children: [
+              const Icon(
+                Icons.wb_sunny_outlined,
+                color: Colors.orange,
+                size: 28,
+              ),
+              const SizedBox(width: 10,),
+              
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text("ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+
+                  Text("Ahlan Wa Sahlan",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold
+                  ),)
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          
-          const Text("Selamat datang di Madinah Path",
-          style: TextStyle(
-              fontSize: 18,color: Colors.grey),),
-          const SizedBox(height: 25,),
+
+          const SizedBox(height: 10,),
+
+          const Text("Pantau perkembangan belajar dan ibadah anak setiap hari",
+          style: TextStyle(fontSize: 15,
+          color: Colors.grey),
+          ),
+
+          const SizedBox(height: 30,),
           
           Card(
-            child: Padding(padding: const EdgeInsets.all(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
@@ -50,21 +76,91 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 20,),
+                const ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    Icons.badge,
+                    color: Colors.green,
+                  ),
+                  title: Text("Nama"),
+                  subtitle: Text("Hanifah Sholihah"),
+                ),
+
+                const Divider(),
+
+                const ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    Icons.school,
+                    color: Colors.blue,
+                  ),
+                  title: Text("Kelas"),
+                  subtitle: Text("TKA"),
+                ),
                 
-                Text("Nama      : Hanifah Sholihah"),
+                const Divider(),
                 
-                SizedBox(height: 8,),
-                
-                Text("Kelas       : TKA"),
-                
-                SizedBox(height: 8,),
-                
-                Text("Sekolah   : RA Al Misyikaah Pekanbaru")
+                const ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    Icons.location_city,
+                    color: Colors.orange,
+                  ),
+                  title: Text("Sekolah"),
+                  subtitle: Text("RA Al Misykaah Pekanbaru"),
+                )
             ],
             ),
 
             ),
+          ),
+          
+          const SizedBox(height: 20,),
+          
+          Card(
+            child: Padding(padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.flag,
+                      color: Colors.deepOrange,
+                    ),
+                    
+                    SizedBox(width: 10,),
+                    
+                    Text("Target Hari Ini",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 20,),
+                
+                const Text("Menghafal Surat Al-Fatihah"),
+                
+                const SizedBox(height: 10,),
+                
+                LinearProgressIndicator(
+                  value: 0.4,
+                  minHeight: 8,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                
+                const SizedBox(height: 8,),
+                
+                const Align(
+                  alignment: Alignment.centerRight,
+                  child: Text("40%"),
+                )
+              ],
+            ),),
           )
         ],
       )
