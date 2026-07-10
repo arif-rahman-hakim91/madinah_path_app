@@ -269,6 +269,151 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          const SizedBox(height: 20,),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  const Text(
+                    "Kelebihan & Perlu Ditingkatkan",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 20,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.thumb_up,
+                        color: Colors.green,
+                      ),
+
+                      const SizedBox(width: 10,),
+
+                      const Text(
+                        "Kelebihan",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    ],
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+
+                      const SizedBox(height: 10,),
+                      const SizedBox(width: 8,),
+
+                      const Text(
+                        "Hafalan meningkat setiap hari",
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+
+                      const SizedBox(width: 8,),
+
+                      const Text(
+                        "Rajin shalat 5 waktu"
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 25,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.orange,
+                      ),
+
+                      const SizedBox(width: 10,),
+
+                      const Text(
+                        "Perlu Ditingkatkan",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: Colors.orange,
+                      ),
+
+                      const SizedBox(width: 10,),
+
+                      const Expanded(
+                          child: Text(
+                              "Muraja'ah lebih rutin"
+                          ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10,),
+
+                  Row(
+                    children: [
+
+                      const Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: Colors.orange,
+                      ),
+
+                      const SizedBox(width: 10,),
+
+                      const Expanded(
+                          child: Text(
+                              "Bangun lebih awal untuk shalat Subuh agar aktifitas harian jadi lebih mudah.",
+                          ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       )
     );
