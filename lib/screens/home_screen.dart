@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'hafalan_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -414,8 +415,19 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => HafalanScreen(),
+              ),
+              );
+            },
+              icon: const Icon(Icons.menu_book),
+              label: const Text("Buka Halaman Hafalan"),),
+          ),
         ],
-      )
+      ),
     );
   }
 Widget _buildSummaryItem(
