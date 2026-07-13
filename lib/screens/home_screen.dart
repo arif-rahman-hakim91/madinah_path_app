@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'hafalan_screen.dart';
+import 'ibadah_screen.dart';
+import 'target_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,11 +20,17 @@ class HomeScreen extends StatelessWidget {
          
           Row(
             children: [
-              const Icon(
-                Icons.wb_sunny_outlined,
-                color: Colors.orange,
-                size: 28,
+
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: Colors.green.shade100,
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.green,
+                  size: 30,
+                ),
               ),
+
               const SizedBox(width: 10,),
               
               Column(
@@ -426,6 +435,151 @@ class HomeScreen extends StatelessWidget {
               icon: const Icon(Icons.menu_book),
               label: const Text("Buka Halaman Hafalan"),),
           ),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  const Text(
+                    "Ibadah Hari Ini",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+
+                  const SizedBox(height: 10,),
+
+                  const Text(
+                    "Yuk isi checklist ibadah hari ini"
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const IbadahScreen(),),);
+                    },
+                    child: const Text("Buka"),),
+                  ),
+                ],
+              ),),
+          ),
+          Card(
+            child: Padding(padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  const Text("Target Harian",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10,),
+
+                  const Text(
+                    "Kelola target belajar dan ibadah harian."
+                  ),
+
+                  const SizedBox(height: 15,),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => TargetScreen(),
+                        ),
+                      );
+                    }, child: const Text("Buka")),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Card(
+            child: Padding(padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                const Text(
+                  "Profil",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+
+                const SizedBox(height: 10,),
+
+                const Text(
+                    "Lihat informasi anak dan pengeturan aplikasi"),
+
+                const SizedBox(height: 15,),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),
+                      ),
+                    );
+                  }, child: const Text("Buka")),
+                )
+              ],
+            ),),
+          ),
+          Card(
+            child: Column(
+              children: [
+
+                ListTile(
+                  leading: const Icon(Icons.menu_book),
+                  title: const Text("Hafalan"),
+                  trailing: const Icon(Icons.arrow_back_ios),
+                  onTap: () {
+                    Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => HafalanScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const Divider(height: 1,),
+
+                ListTile(
+                  leading: const Icon(Icons.mosque),
+                  title: const Text("Ibadah"),
+                  trailing: const Icon(Icons.arrow_back_ios),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => TargetScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const Divider(height: 1,),
+
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text("Profil"),
+                  trailing: const Icon(Icons.arrow_back_ios),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+
         ],
       ),
     );

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'add_hafalan_screen.dart';
+import '../data/hafalan_data.dart';
 
-class HafalanScreen extends StatelessWidget {
+class HafalanScreen extends StatefulWidget {
   const HafalanScreen({super.key});
+
+  @override
+  State<HafalanScreen> createState() => _HafalanScreenState();
+}
+
+class _HafalanScreenState extends State<HafalanScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +19,15 @@ class HafalanScreen extends StatelessWidget {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-            MaterialPageRoute(
-              builder: (context) => const AddHafalanScreen(),
-            ),
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddHafalanScreen(),
+              ),
             );
+
+            setState(() {});
           },
       child: const Icon(Icons.add),
       ),
@@ -43,14 +52,48 @@ class HafalanScreen extends StatelessWidget {
 
                   const SizedBox(height: 20,),
 
-                  const ListTile(
-                    leading: Icon(
-                      Icons.menu_book,
-                      color: Colors.green,
+                  if (daftarHafalan.isEmpty)
+
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(
+                        child: Text(
+                          "Belum ada hafalan.\nTekan tombol + untuk menambahkan hafalan.",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+
+                  else
+
+                    ...daftarHafalan.map(
+                          (hafalan) => ListTile(
+                            leading: const Icon(
+                              Icons.menu_book,
+                              color: Colors.green,
+                            ),
+
+                            title: Text(hafalan.namaSurat),
+
+                            subtitle: Text(
+                              "Ayat : ${hafalan.ayat}",
+                            ),
+
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+
+                                setState(() {
+                                  daftarHafalan.remove(hafalan);
+                                });
+
+                              },
+                            ),
+                          ),
                     ),
-                    title: Text("Surat Al-Ratihah"),
-                    subtitle: Text("Ayat : 1 - 7"),
-                  ),
 
                 ],
               ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/hafalan.dart';
+import '../data/hafalan_data.dart';
 
 class AddHafalanScreen extends StatefulWidget {
   const AddHafalanScreen({super.key});
@@ -64,10 +66,24 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  debugPrint(suratController.text);
-                  debugPrint(ayatController.text);
+                onPressed: () async {
+                  if (suratController.text.isEmpty ||
+                      ayatController.text.isEmpty) {
 
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Nama surat dan ayat harus diisi.",
+                        ),
+                      ),
+                    );
+
+                    return;
+                  }
+                  daftarHafalan.add(
+                    Hafalan(namaSurat: suratController.text,
+                        ayat: ayatController.text),
+                  );
                   Navigator.pop(context);
                 },
                 child: const Text("Simpan"),
