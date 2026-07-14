@@ -1,17 +1,95 @@
-# project
+# Madinah Path
 
-Aplikasi untuk monitoring pendidikan anak dan perkambangan setiap hari
+Madinah Path adalah aplikasi Flutter yang dirancang untuk membantu orang tua memonitor perkembangan pendidikan Islam anak setiap hari.
+Project ini dikembangkan sebagai media belajar Flutter sekaligus membangun aplikasi nyata dengan arsitektur yang baik.
+---
+## Features
+
+### Dashboard
+- Ringkasan aktivitas harian
+- Target harian
+- Progress mingguan
+
+### Hafalan
+- Menambah hafalan
+- Menampilkan daftar hafalan
+- Menghapus hafalan
+
+### Ibadah
+- Checklist ibadah harian
+
+### Profile
+- Informasi profil anak
+
+## Tech Stack
+- Flutter
+- Dart
+- Material Design
+
+Database:
+- List
+
+## Project Structure
+
+```text
+lib/
+│
+├── models/
+├── repositories/
+├── data/
+├── screens/
+└── main.dart
+```
+
+### v0.1.0
+
+- Welcome Screen
+- Dashboard
+- Hafalan
+- Ibadah
+- Profile
+- CRUD menggunakan List
+- Repository Layer
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Clone repository
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+git clone https://github.com/arif-rahman-hakim91/madinah_path_app.git
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Masuk ke folder project
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+cd madinah_path_app
+```
+
+Install dependency
+
+```bash
+flutter pub get
+```
+
+Menjalankan aplikasi
+
+```bash
+flutter run
+```
+
+Build APK Debug
+
+```bash
+flutter build apk --debug
+```
+
+## Platform
+
+- Android
+
+## License
+
+MIT License
+
+## Author
+- Arif Rahman Hakim
