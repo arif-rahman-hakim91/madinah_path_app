@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_hafalan_screen.dart';
 import '../data/hafalan_data.dart';
+import '../repositories/hafalan_repository.dart';
 
 class HafalanScreen extends StatefulWidget {
   const HafalanScreen({super.key});
@@ -10,6 +11,7 @@ class HafalanScreen extends StatefulWidget {
 }
 
 class _HafalanScreenState extends State<HafalanScreen> {
+  final repository = HafalanRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class _HafalanScreenState extends State<HafalanScreen> {
 
                   const SizedBox(height: 20,),
 
-                  if (daftarHafalan.isEmpty)
+                  if (repository.getAll().isEmpty)
 
                     const Padding(
                       padding: EdgeInsets.all(20),
@@ -66,7 +68,7 @@ class _HafalanScreenState extends State<HafalanScreen> {
 
                   else
 
-                    ...daftarHafalan.map(
+                    ...repository.getAll().map(
                           (hafalan) => ListTile(
                             leading: const Icon(
                               Icons.menu_book,
@@ -79,18 +81,33 @@ class _HafalanScreenState extends State<HafalanScreen> {
                               "Ayat : ${hafalan.ayat}",
                             ),
 
-                            trailing: IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
 
-                                setState(() {
-                                  daftarHafalan.remove(hafalan);
-                                });
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
+                                  ),
+                                  onPressed: () {
 
-                              },
+                                  },
+                                ),
+
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      repository.getAll().remove(hafalan);
+                                    });
+                                  },
+                                ),
+
+                              ],
                             ),
                           ),
                     ),

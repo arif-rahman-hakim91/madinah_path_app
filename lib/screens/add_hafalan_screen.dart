@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/hafalan.dart';
 import '../data/hafalan_data.dart';
+import '../repositories/hafalan_repository.dart';
 
 class AddHafalanScreen extends StatefulWidget {
   const AddHafalanScreen({super.key});
@@ -12,6 +13,7 @@ class AddHafalanScreen extends StatefulWidget {
 class _AddHafalanScreenState extends State<AddHafalanScreen> {
   final TextEditingController suratController = TextEditingController();
   final TextEditingController ayatController = TextEditingController();
+  final repository = HafalanRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +82,11 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
 
                     return;
                   }
-                  daftarHafalan.add(
-                    Hafalan(namaSurat: suratController.text,
-                        ayat: ayatController.text),
+                  repository.add(
+                    Hafalan(
+                      namaSurat: suratController.text,
+                      ayat: ayatController.text,
+                    ),
                   );
                   Navigator.pop(context);
                 },
