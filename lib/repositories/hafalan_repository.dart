@@ -1,17 +1,21 @@
+import 'package:sqflite/sqflite.dart';
+
 import '../data/hafalan_data.dart';
-import '../models/hafalan.dart';
+import '../database/database_helper.dart';
 import '../models/hafalan.dart';
 
 class HafalanRepository {
-  List<Hafalan> getAll() {
-    return daftarHafalan;
+
+  final dbHelper = DatabaseHelper.instance;
+
+  Future<void> addSQLite(Hafalan hafalan) async {
+
+    final db = await dbHelper.database;
+
+    await db.insert(
+      'hafalan',
+      hafalan.toMap());
+
   }
 
-  void add(Hafalan hafalan) {
-    daftarHafalan.add(hafalan);
-  }
-
-  void delete(Hafalan hafalan) {
-    daftarHafalan.remove(hafalan);
-  }
 }
