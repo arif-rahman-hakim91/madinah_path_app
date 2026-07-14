@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/hafalan.dart';
-import '../data/hafalan_data.dart';
 import '../repositories/hafalan_repository.dart';
 
 class AddHafalanScreen extends StatefulWidget {
@@ -82,13 +81,15 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
 
                     return;
                   }
-                  repository.add(
+                  await repository.add(
                     Hafalan(
                       namaSurat: suratController.text,
                       ayat: ayatController.text,
                     ),
                   );
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text("Simpan"),
               ),
