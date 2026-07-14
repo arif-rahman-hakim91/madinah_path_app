@@ -1,5 +1,6 @@
 import '../data/hafalan_data.dart';
 import '../models/hafalan.dart';
+import '../models/hafalan.dart';
 
 class HafalanRepository {
   List<Hafalan> getAll() {
