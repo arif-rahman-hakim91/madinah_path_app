@@ -38,4 +38,14 @@ class HafalanRepository {
       whereArgs: [id],
     );
   }
+  Future<void> update(Hafalan hafalan) async {
+    final db = await dbHelper.database;
+
+    await db.update(
+      'hafalan',
+      hafalan.toMap(),
+      where: 'id = ?',
+      whereArgs: [hafalan.id],
+    );
+  }
 }

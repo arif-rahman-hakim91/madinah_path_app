@@ -115,7 +115,20 @@ class _HafalanScreenState extends State<HafalanScreen> {
                                 Icons.edit,
                                 color: Colors.blue,
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddHafalanScreen(
+                                      hafalan: hafalan,
+                                    ),
+                                  ),
+                                );
+
+                                setState(() {
+                                  _loadData();
+                                });
+                              },
                             ),
                             IconButton(
                               icon: const Icon(

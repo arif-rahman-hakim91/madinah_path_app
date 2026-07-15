@@ -3,7 +3,10 @@ import '../models/hafalan.dart';
 import '../repositories/hafalan_repository.dart';
 
 class AddHafalanScreen extends StatefulWidget {
-  const AddHafalanScreen({super.key});
+  final Hafalan? hafalan;
+  const AddHafalanScreen({
+    super.key,
+    this.hafalan,});
 
   @override
   State<AddHafalanScreen> createState() => _AddHafalanScreenState();
@@ -13,6 +16,16 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
   final TextEditingController suratController = TextEditingController();
   final TextEditingController ayatController = TextEditingController();
   final repository = HafalanRepository();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.hafalan != null) {
+      suratController.text = widget.hafalan!.namaSurat;
+      ayatController.text = widget.hafalan!.ayat;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +94,27 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
 
                     return;
                   }
-                  await repository.add(
-                    Hafalan(
-                      namaSurat: suratController.text,
-                      ayat: ayatController.text,
-                    ),
-                  );
+                  if (widget.hafalan == null) {
+
+                    await repository.add(
+                      Hafalan(
+                        namaSurat: suratController.text,
+                        ayat: ayatController.text,
+                      ),
+                    );
+
+                  } else {
+
+                    await repository.update(
+                      Hafalan(
+                        id: widget.hafalan!.id,
+                        namaSurat: suratController.text,
+                        ayat: ayatController.text,
+                      ),
+                    );
+
+                  }
+
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
