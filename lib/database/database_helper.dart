@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -51,6 +51,19 @@ class DatabaseHelper {
         dzikir INTEGER NOT NULL
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE target_ibadah(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        subuh INTEGER NOT NULL,
+        dzuhur INTEGER NOT NULL,
+        ashar INTEGER NOT NULL,
+        maghrib INTEGER NOT NULL,
+        isya INTEGER NOT NULL,
+        tilawah INTEGER NOT NULL,
+        dzikir INTEGER NOT NULL
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(
@@ -63,6 +76,21 @@ class DatabaseHelper {
         CREATE TABLE IF NOT EXISTS ibadah(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           tanggal TEXT NOT NULL,
+          subuh INTEGER NOT NULL,
+          dzuhur INTEGER NOT NULL,
+          ashar INTEGER NOT NULL,
+          maghrib INTEGER NOT NULL,
+          isya INTEGER NOT NULL,
+          tilawah INTEGER NOT NULL,
+          dzikir INTEGER NOT NULL
+        )
+      ''');
+    }
+
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS target_ibadah(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
           subuh INTEGER NOT NULL,
           dzuhur INTEGER NOT NULL,
           ashar INTEGER NOT NULL,

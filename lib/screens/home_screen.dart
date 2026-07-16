@@ -3,9 +3,34 @@ import 'hafalan_screen.dart';
 import 'ibadah_screen.dart';
 import 'target_screen.dart';
 import 'profile_screen.dart';
+import '../services/dashboard_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final dashboardService = DashboardService();
+
+  double progress = 0;
+  @override
+  void initState() {
+    super.initState();
+    loadProgress();
+  }
+
+  Future<void> loadProgress() async {
+    final value = await dashboardService.getTodayProgress();
+
+    if (!mounted) return;
+
+    setState(() {
+      progress = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,17 +183,19 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 10,),
                 
                 LinearProgressIndicator(
-                  value: 0.4,
+                  value: progress,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 
                 const SizedBox(height: 8,),
                 
-                const Align(
+                Align(
                   alignment: Alignment.centerRight,
-                  child: Text("40%"),
-                )
+                  child: Text(
+                    "${(progress * 100).toStringAsFixed(0)}%",
+                  ),
+                ),
               ],
             ),),
           ),
