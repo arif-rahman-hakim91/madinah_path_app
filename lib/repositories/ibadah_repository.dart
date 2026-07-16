@@ -32,13 +32,31 @@ class IbadahRepository {
   Future<Ibadah?> getToday() async {
     final db = await dbHelper.database;
 
-    final today =
-    DateTime.now().toIso8601String().substring(0, 10);
+    final today = DateTime.now()
+        .toIso8601String()
+        .substring(0, 10);
 
     final result = await db.query(
       'ibadah',
       where: 'substr(tanggal, 1, 10) = ?',
       whereArgs: [today],
+      limit: 1,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    return Ibadah.fromMap(result.first);
+  }
+
+  Future<Ibadah?> getById(int id) async {
+    final db = await dbHelper.database;
+
+    final result = await db.query(
+      'ibadah',
+      where: 'id = ?',
+      whereArgs: [id],
       limit: 1,
     );
 

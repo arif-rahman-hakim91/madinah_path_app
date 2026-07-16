@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+
+import '../core/constants/app_message.dart';
 import '../models/ibadah.dart';
 import '../repositories/ibadah_repository.dart';
-import '../core/constants/app_message.dart';
+import 'ibadah_history_screen.dart';
 
 class IbadahScreen extends StatefulWidget {
-  const IbadahScreen({super.key});
+  final Ibadah? ibadah;
+
+  const IbadahScreen({
+    super.key,
+    this.ibadah,
+  });
 
   @override
   State<IbadahScreen> createState() => _IbadahScreenState();
@@ -26,7 +33,20 @@ class _IbadahScreenState extends State<IbadahScreen> {
   @override
   void initState() {
     super.initState();
-    loadToday();
+
+    if (widget.ibadah != null) {
+      todayIbadah = widget.ibadah;
+
+      subuh = widget.ibadah!.subuh;
+      dzuhur = widget.ibadah!.dzuhur;
+      ashar = widget.ibadah!.ashar;
+      maghrib = widget.ibadah!.maghrib;
+      isya = widget.ibadah!.isya;
+      tilawah = widget.ibadah!.tilawah;
+      dzikir = widget.ibadah!.dzikir;
+    } else {
+      loadToday();
+    }
   }
 
   Future<void> loadToday() async {
@@ -90,9 +110,6 @@ class _IbadahScreenState extends State<IbadahScreen> {
     }
 
     await loadToday();
-
-    final test = await repository.getToday();
-    debugPrint("DATA SQLITE = ${test?.toMap()}");
   }
 
   @override
@@ -101,6 +118,20 @@ class _IbadahScreenState extends State<IbadahScreen> {
       appBar: AppBar(
         title: const Text("Ibadah"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month),
+            tooltip: "Riwayat",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const IbadahHistoryScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
@@ -118,6 +149,7 @@ class _IbadahScreenState extends State<IbadahScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+
                   const SizedBox(height: 20),
 
                   CheckboxListTile(
@@ -187,10 +219,12 @@ class _IbadahScreenState extends State<IbadahScreen> {
                         if (!context.mounted) return;
 
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
+                          SnackBar(
+                            content: const Text(
                               AppMessage.saveSuccess,
                             ),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       },
