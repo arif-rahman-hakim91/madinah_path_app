@@ -16,6 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final dashboardService = DashboardService();
 
   double progress = 0;
+  int ibadahCount = 0;
+  int hafalanCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -24,11 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadProgress() async {
     final value = await dashboardService.getTodayProgress();
+    final ibadah = await dashboardService.getTodayIbadahCount();
+    final hafalan = await dashboardService.getTodayHafalanCount();
 
     if (!mounted) return;
 
     setState(() {
       progress = value;
+      ibadahCount = ibadah;
+      hafalanCount = hafalan;
     });
   }
 
@@ -223,19 +230,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildSummaryItem(
                           Icons.menu_book,
                           "Hafalan",
-                          "3",
+                          "$hafalanCount",
                           Colors.green,),
                         _buildSummaryItem(
                           Icons.mosque,
                           "Ibadah",
-                          "5",
+                            "$ibadahCount",
                           Colors.blue
                         ),
                         _buildSummaryItem(
                           Icons.star,
-                          "Poin",
-                          "85",
-                          Colors.orange
+                          "Progress",
+                          "${(progress * 100).toStringAsFixed(0)}%",
+                          Colors.orange,
                         ),
                       ],
                     ),

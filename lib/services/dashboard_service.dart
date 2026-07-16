@@ -59,4 +59,32 @@ class DashboardService {
 
     return doneTotal / targetTotal;
   }
+
+  Future<int> getTodayIbadahCount() async {
+    final Ibadah? ibadah = await ibadahRepository.getToday();
+
+    if (ibadah == null) {
+      return 0;
+    }
+
+    int total = 0;
+
+    if (ibadah.subuh) total++;
+    if (ibadah.dzuhur) total++;
+    if (ibadah.ashar) total++;
+    if (ibadah.maghrib) total++;
+    if (ibadah.isya) total++;
+    if (ibadah.tilawah) total++;
+    if (ibadah.dzikir) total++;
+
+    return total;
+  }
+
+  Future<int> getTodayHafalanCount() async {
+    final db = await ibadahRepository.dbHelper.database;
+
+    final result = await db.query('hafalan');
+
+    return result.length;
+  }
 }
