@@ -8,11 +8,14 @@ class DashboardData {
 
   final String improvement;
 
+  final List<double> weeklyProgress;
+
   const DashboardData({
     required this.progress,
     required this.hafalanCount,
     required this.ibadahCount,
     required this.strength,
     required this.improvement,
+    required this.weeklyProgress,
   });
 }

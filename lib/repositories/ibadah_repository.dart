@@ -92,4 +92,30 @@ class IbadahRepository {
       whereArgs: [id],
     );
   }
+
+  Future<List<Ibadah>> getLast7Days(int childId) async {
+    final db = await dbHelper.database;
+
+    final now = DateTime.now();
+
+    final startDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(const Duration(days: 6));
+
+    final result = await db.query(
+      'ibadah',
+      where: 'childId = ? AND tanggal >= ?',
+      whereArgs: [
+        childId,
+        startDate.toIso8601String(),
+      ],
+      orderBy: 'tanggal ASC',
+    );
+
+    return result
+        .map((map) => Ibadah.fromMap(map))
+        .toList();
+  }
 }

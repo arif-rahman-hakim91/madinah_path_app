@@ -21,6 +21,7 @@ class DashboardService {
         ibadahCount: 0,
         strength: "Belum ada data.",
         improvement: "Belum ada data.",
+        weeklyProgress: [],
       );
     }
 
@@ -32,6 +33,25 @@ class DashboardService {
 
     final hafalan =
     await hafalanRepository.getAll(child.id!);
+
+    final weekly =
+    await ibadahRepository.getLast7Days(child.id!);
+
+    List<double> weeklyProgress = [];
+
+    for (final item in weekly) {
+      int done = 0;
+
+      if (item.subuh) done++;
+      if (item.dzuhur) done++;
+      if (item.ashar) done++;
+      if (item.maghrib) done++;
+      if (item.isya) done++;
+      if (item.tilawah) done++;
+      if (item.dzikir) done++;
+
+      weeklyProgress.add(done / 7);
+    }
 
     int ibadahCount = 0;
 
@@ -117,6 +137,7 @@ class DashboardService {
       ibadahCount: ibadahCount,
       strength: strength,
       improvement: improvement,
+      weeklyProgress: weeklyProgress,
     );
   }
 }

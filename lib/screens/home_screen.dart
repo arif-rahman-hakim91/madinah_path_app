@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String strength = "";
   String improvement = "";
+  List<double> weeklyProgress = [];
 
   @override
   void initState() {
@@ -43,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       strength = dashboard.strength;
       improvement = dashboard.improvement;
+
+      weeklyProgress = dashboard.weeklyProgress;
     });
   }
   Future<void> pilihAnak() async {
@@ -297,7 +300,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 6,),
                       
                       LinearProgressIndicator(
-                        value: 0.9,
+                        value: weeklyProgress.isNotEmpty
+                            ? weeklyProgress[0]
+                            : 0,
                         minHeight: 8,
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(20),
@@ -309,7 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 6,),
                       
                       LinearProgressIndicator(
-                        value: 0.7,
+                        value: weeklyProgress.length > 1
+                            ? weeklyProgress[1]
+                            : 0,
                         minHeight: 8,
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(20),
@@ -322,7 +329,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 6,),
                       
                       LinearProgressIndicator(
-                        value: 0.5,
+                        value: weeklyProgress.length > 2
+                            ? weeklyProgress[2]
+                            : 0,
                         minHeight: 8,
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(20),

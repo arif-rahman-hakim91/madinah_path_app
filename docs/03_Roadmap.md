@@ -1,143 +1,164 @@
-# Madinah Path Roadmap
+# Decision Log
 
-> Version : v0.4.0
-> Last Update : Checkpoint 5
+Project : Madinah Path
 
 ---
 
-# Milestone 1 - Foundation
+## Decision 001
 
-- [x] Flutter Project
-- [x] Navigation
-- [x] SQLite
-- [x] Repository Pattern
-- [x] Home Dashboard
+Menggunakan SQLite sebagai database lokal.
 
 Status
 
-✅ Selesai
+Accepted
 
 ---
 
-# Milestone 2 - Hafalan
+## Decision 002
 
-- [x] Hafalan Model
-- [x] Hafalan CRUD
-- [x] Hafalan Screen
-- [x] Edit Hafalan
-- [x] Delete Hafalan
+Menggunakan Repository Pattern agar UI tidak langsung mengakses database.
 
 Status
 
-✅ Selesai
+Accepted
 
 ---
 
-# Milestone 3 - Ibadah
+## Decision 003
 
-- [x] Ibadah Model
-- [x] Checklist Harian
-- [x] Riwayat Ibadah
-- [x] Detail Ibadah
+Setiap Child memiliki data sendiri.
 
-Status
-
-✅ Selesai
-
----
-
-# Milestone 4 - Family Foundation
-
-- [x] Guardian
-- [x] Child
-- [x] Child CRUD
-- [x] Child Selector
-- [x] Active Child Card
-
-Status
-
-✅ Selesai
-
----
-
-# Milestone 5 - Child Relation
-
-Semua data mulai dimiliki oleh Child.
+Relasi
 
 Guardian
+
 ↓
+
 Child
-├── Hafalan
-├── Ibadah
-└── Target Ibadah
 
-Progress
+↓
 
-- [x] Hafalan childId
-- [x] Ibadah childId
-- [ ] Target childId
+Semua data perkembangan
 
-Status
+Alasan
 
-⏳ Sedang dikerjakan
-
----
-
-# Milestone 6 - Dashboard
-
-- [x] Dashboard Model
-- [x] Dashboard Service
-- [x] Active Child Integration
-- [ ] Weekly Progress
-- [ ] Analytics
-- [ ] Recommendation
+Dashboard harus berubah ketika Child aktif berganti.
 
 Status
 
-⏳ In Progress
+Accepted
+
 ---
 
-# Milestone 7 - Education
+## Decision 004
 
-Target
+Menggunakan CurrentChildService.
 
-- Riwayat Pendidikan
-- Jenjang
-- Sekolah
-- Guru
-- Catatan
+Tujuan
+
+Menyimpan Child yang sedang aktif.
+
+Seluruh Screen mengambil Child dari CurrentChildService.
 
 Status
 
-⬜ Belum
+Accepted
 
 ---
 
-# Milestone 8 - Release Lite
+## Decision 005
 
-Target
+Seluruh data perkembangan wajib mempunyai childId.
 
-- Bug Fix
-- Testing
-- APK
-- Release
+Modul
+
+- Hafalan
+- Ibadah
+- Target Ibadah
+- Education
+- Reward
+- Achievement
+
+Alasan
+
+Satu aplikasi digunakan oleh beberapa anak.
 
 Status
 
-⬜ Belum
+Accepted
 
 ---
 
-# Current Position
+## Decision 006
 
-Version
+HomeScreen tidak dibongkar.
 
-v0.4.0
+Dashboard akan ditingkatkan sedikit demi sedikit agar tidak merusak lebih dari 700 baris kode.
 
-Checkpoint
+Status
 
-Checkpoint 5
+Accepted
 
-Current Task
+---
 
-Target Child Relation
+## Decision 007
+
+Setiap milestone besar wajib memiliki Git Checkpoint.
+
+Contoh
+
+Checkpoint 1
+
+Checkpoint 2
+
+Checkpoint 3
+
+dst.
+
+Tujuan
+
+Jika terjadi kesalahan besar dapat kembali ke kondisi stabil.
+
+Status
+
+Accepted
+
+---
+
+## Decision 008
+
+Setiap selesai milestone, seluruh dokumentasi diperbarui.
+
+Dokumen
+
+01_Vision.md
+
+02_Architecture.md
+
+03_Roadmap.md
+
+04_DecisionLog.md
+
+Tujuan
+
+Agar project dapat dilanjutkan di chat baru tanpa kehilangan konteks.
+
+Status
+
+Accepted
+
+## Decision 009
+
+Dashboard tidak boleh mengambil data langsung dari Repository.
+
+Semua data Dashboard harus melalui DashboardService.
+
+Tujuan
+
+- HomeScreen tetap sederhana.
+- Logika bisnis berada di Service.
+- Mudah dikembangkan ketika Dashboard bertambah kompleks.
+
+Status
+
+Accepted
