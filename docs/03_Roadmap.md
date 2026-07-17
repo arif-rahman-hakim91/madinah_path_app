@@ -83,19 +83,18 @@ Status
 
 ---
 
-# Milestone 6 - Dashboard Integration
+# Milestone 6 - Dashboard
 
-Target
-
-- Ringkasan Hari Ini
-- Progress Ibadah
-- Progress Hafalan
-- Active Child Dashboard
+- [x] Dashboard Model
+- [x] Dashboard Service
+- [x] Active Child Integration
+- [ ] Weekly Progress
+- [ ] Analytics
+- [ ] Recommendation
 
 Status
 
-⬜ Belum
-
+⏳ In Progress
 ---
 
 # Milestone 7 - Education

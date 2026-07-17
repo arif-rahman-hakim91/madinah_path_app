@@ -19,6 +19,8 @@ class DashboardService {
         progress: 0,
         hafalanCount: 0,
         ibadahCount: 0,
+        strength: "Belum ada data.",
+        improvement: "Belum ada data.",
       );
     }
 
@@ -89,10 +91,32 @@ class DashboardService {
       }
     }
 
+    String strength = "Belum ada data.";
+
+    String improvement = "Belum ada data.";
+
+    if (ibadahCount >= 6) {
+      strength = "Masya Allah, ibadah hari ini sangat baik.";
+    } else if (ibadahCount >= 4) {
+      strength = "Ibadah sudah cukup baik, pertahankan.";
+    } else {
+      strength = "Mulai membangun kebiasaan ibadah harian.";
+    }
+
+    if (hafalan.isEmpty) {
+      improvement = "Tambahkan hafalan pertama hari ini.";
+    } else if (progress < 0.5) {
+      improvement = "Masih ada target ibadah yang belum tercapai.";
+    } else {
+      improvement = "Pertahankan konsistensi hari ini.";
+    }
+
     return DashboardData(
       progress: progress,
       hafalanCount: hafalan.length,
       ibadahCount: ibadahCount,
+      strength: strength,
+      improvement: improvement,
     );
   }
 }

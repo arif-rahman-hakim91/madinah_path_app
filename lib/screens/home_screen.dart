@@ -22,6 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int ibadahCount = 0;
   int hafalanCount = 0;
 
+  String strength = "";
+  String improvement = "";
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
       progress = dashboard.progress;
       ibadahCount = dashboard.ibadahCount;
       hafalanCount = dashboard.hafalanCount;
+
+      strength = dashboard.strength;
+      improvement = dashboard.improvement;
     });
   }
   Future<void> pilihAnak() async {
@@ -148,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.cake),
+                  leading: const Icon(Icons.workspace_premium),
                   title: const Text("Nama Panggilan"),
                   subtitle: Text(
                     CurrentChildService.currentChild?.namaPanggilan ??
@@ -370,18 +376,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   Row(
                     children: [
-
                       const Icon(
                         Icons.check_circle,
                         color: Colors.green,
                         size: 20,
                       ),
 
-                      const SizedBox(height: 10,),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
 
-                      const Text(
-                        "Hafalan meningkat setiap hari",
+                      Expanded(
+                        child: Text(strength),
                       ),
                     ],
                   ),
@@ -431,19 +435,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   Row(
                     children: [
-
                       const Icon(
                         Icons.circle,
-                        size: 8,
                         color: Colors.orange,
+                        size: 8,
                       ),
 
-                      const SizedBox(width: 10,),
+                      const SizedBox(width: 8),
 
-                      const Expanded(
-                          child: Text(
-                              "Muraja'ah lebih rutin"
-                          ),
+                      Expanded(
+                        child: Text(improvement),
                       ),
                     ],
                   ),

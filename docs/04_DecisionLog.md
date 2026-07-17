@@ -146,3 +146,19 @@ Agar project dapat dilanjutkan di chat baru tanpa kehilangan konteks.
 Status
 
 Accepted
+
+## Decision 009
+
+Dashboard tidak boleh mengambil data langsung dari Repository.
+
+Semua data Dashboard harus melalui DashboardService.
+
+Tujuan
+
+- HomeScreen tetap sederhana.
+- Logika bisnis berada di Service.
+- Mudah dikembangkan ketika Dashboard bertambah kompleks.
+
+Status
+
+Accepted
