@@ -1,6 +1,8 @@
 class TargetIbadah {
   final int? id;
 
+  final int childId;
+
   final int subuh;
   final int dzuhur;
   final int ashar;
@@ -12,6 +14,7 @@ class TargetIbadah {
 
   const TargetIbadah({
     this.id,
+    required this.childId,
     required this.subuh,
     required this.dzuhur,
     required this.ashar,
@@ -24,6 +27,7 @@ class TargetIbadah {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'childId': childId,
       'subuh': subuh,
       'dzuhur': dzuhur,
       'ashar': ashar,
@@ -36,14 +40,15 @@ class TargetIbadah {
 
   factory TargetIbadah.fromMap(Map<String, dynamic> map) {
     return TargetIbadah(
-      id: map['id'],
-      subuh: map['subuh'],
-      dzuhur: map['dzuhur'],
-      ashar: map['ashar'],
-      maghrib: map['maghrib'],
-      isya: map['isya'],
-      tilawah: map['tilawah'],
-      dzikir: map['dzikir'],
+      id: map['id'] as int?,
+      childId: map['childId'] as int,
+      subuh: map['subuh'] as int,
+      dzuhur: map['dzuhur'] as int,
+      ashar: map['ashar'] as int,
+      maghrib: map['maghrib'] as int,
+      isya: map['isya'] as int,
+      tilawah: map['tilawah'] as int,
+      dzikir: map['dzikir'] as int,
     );
   }
 }

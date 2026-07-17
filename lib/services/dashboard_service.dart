@@ -21,7 +21,7 @@ class DashboardService {
     await ibadahRepository.getToday(child.id!);
 
     final TargetIbadah? target =
-    await targetRepository.getTarget();
+    await targetRepository.getTarget(child.id!);
 
     if (ibadah == null || target == null) {
       return 0;
@@ -106,8 +106,7 @@ class DashboardService {
       return 0;
     }
 
-    final hafalan =
-    await hafalanRepository.getAll(child.id!);
+    final hafalan = await hafalanRepository.getAll(child.id!);
 
     return hafalan.length;
   }

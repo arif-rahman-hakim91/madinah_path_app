@@ -1,123 +1,144 @@
 # Madinah Path Roadmap
 
-Status : Living Document
+> Version : v0.4.0
+> Last Update : Checkpoint 5
 
 ---
 
-# Version History
+# Milestone 1 - Foundation
 
-v0.1.0
+- [x] Flutter Project
+- [x] Navigation
+- [x] SQLite
+- [x] Repository Pattern
+- [x] Home Dashboard
 
-✅ Foundation
+Status
 
-Navigation
-
-Dashboard UI
-
----
-
-v0.2.0
-
-✅ Hafalan
-
-SQLite
-
-CRUD
-
-History
+✅ Selesai
 
 ---
 
-v0.3.0
+# Milestone 2 - Hafalan
 
-✅ Ibadah
+- [x] Hafalan Model
+- [x] Hafalan CRUD
+- [x] Hafalan Screen
+- [x] Edit Hafalan
+- [x] Delete Hafalan
 
-CRUD
+Status
 
-Target Ibadah
-
-Dashboard Integration
+✅ Selesai
 
 ---
 
-v0.4.0
+# Milestone 3 - Ibadah
 
-✅ Dashboard Integration
+- [x] Ibadah Model
+- [x] Checklist Harian
+- [x] Riwayat Ibadah
+- [x] Detail Ibadah
+
+Status
+
+✅ Selesai
+
+---
+
+# Milestone 4 - Family Foundation
+
+- [x] Guardian
+- [x] Child
+- [x] Child CRUD
+- [x] Child Selector
+- [x] Active Child Card
+
+Status
+
+✅ Selesai
+
+---
+
+# Milestone 5 - Child Relation
+
+Semua data mulai dimiliki oleh Child.
+
+Guardian
+↓
+Child
+├── Hafalan
+├── Ibadah
+└── Target Ibadah
 
 Progress
 
-Statistics
+- [x] Hafalan childId
+- [x] Ibadah childId
+- [ ] Target childId
 
-Summary
+Status
 
----
-
-# Current Milestone
-
-v0.5.0
-
-🚧 Family Foundation
-
-Guardian
-
-Family Screen
-
-Child
-
-Child Selector
-
-Education History
-
-Dashboard Integration
+⏳ Sedang dikerjakan
 
 ---
 
-# Next Milestone
+# Milestone 6 - Dashboard Integration
 
-v0.6.0
+Target
 
-Target Hafalan
+- Ringkasan Hari Ini
+- Progress Ibadah
+- Progress Hafalan
+- Active Child Dashboard
 
-Progress Hafalan
+Status
 
-Dashboard Hafalan
-
-Statistik Hafalan
-
----
-
-v0.7.0
-
-Reward Anak
-
-Reward Guardian
-
-Badge
-
-Point
+⬜ Belum
 
 ---
 
-v0.8.0
+# Milestone 7 - Education
 
-Family Challenge
+Target
 
-Family Achievement
+- Riwayat Pendidikan
+- Jenjang
+- Sekolah
+- Guru
+- Catatan
 
-Family Reward
+Status
 
----
-
-v0.9.0
-
-Backup
-
-Restore
-
-Cloud Sync
+⬜ Belum
 
 ---
 
-v1.0.0
+# Milestone 8 - Release Lite
 
-Production Release
+Target
+
+- Bug Fix
+- Testing
+- APK
+- Release
+
+Status
+
+⬜ Belum
+
+---
+
+# Current Position
+
+Version
+
+v0.4.0
+
+Checkpoint
+
+Checkpoint 5
+
+Current Task
+
+Target Child Relation

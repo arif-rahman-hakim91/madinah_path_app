@@ -16,11 +16,13 @@ class TargetIbadahRepository {
     );
   }
 
-  Future<TargetIbadah?> getTarget() async {
+  Future<TargetIbadah?> getTarget(int childId) async {
     final db = await dbHelper.database;
 
     final result = await db.query(
       'target_ibadah',
+      where: 'childId = ?',
+      whereArgs: [childId],
       limit: 1,
     );
 

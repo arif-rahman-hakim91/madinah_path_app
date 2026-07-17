@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/target_ibadah.dart';
 import '../repositories/target_ibadah_repository.dart';
+import '../services/current_child_service.dart';
 
 class TargetIbadahScreen extends StatefulWidget {
   const TargetIbadahScreen({super.key});
@@ -30,7 +31,11 @@ class _TargetIbadahScreenState extends State<TargetIbadahScreen> {
   }
 
   Future<void> loadTarget() async {
-    final data = await repository.getTarget();
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) return;
+
+    final data = await repository.getTarget(child.id!);
 
     if (!mounted) return;
 
@@ -80,9 +85,14 @@ class _TargetIbadahScreenState extends State<TargetIbadahScreen> {
   }
 
   Future<void> saveTarget() async {
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) return;
+
     if (target == null) {
       await repository.save(
         TargetIbadah(
+          childId: child.id!,
           subuh: int.tryParse(subuhController.text) ?? 0,
           dzuhur: int.tryParse(dzuhurController.text) ?? 0,
           ashar: int.tryParse(asharController.text) ?? 0,
@@ -96,6 +106,7 @@ class _TargetIbadahScreenState extends State<TargetIbadahScreen> {
       await repository.update(
         TargetIbadah(
           id: target!.id,
+          childId: target!.childId,
           subuh: int.tryParse(subuhController.text) ?? 0,
           dzuhur: int.tryParse(dzuhurController.text) ?? 0,
           ashar: int.tryParse(asharController.text) ?? 0,
@@ -112,6 +123,20 @@ class _TargetIbadahScreenState extends State<TargetIbadahScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (CurrentChildService.currentChild == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Target Ibadah"),
+          centerTitle: true,
+        ),
+        body: const Center(
+          child: Text(
+            "Silakan pilih anak terlebih dahulu.",
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Target Ibadah"),

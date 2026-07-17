@@ -1,115 +1,148 @@
 # Decision Log
 
-Status : Living Document
-
-Semua keputusan penting dicatat di sini.
+Project : Madinah Path
 
 ---
 
-Decision 001
+## Decision 001
 
-Dashboard tetap menggunakan Profil Anak.
+Menggunakan SQLite sebagai database lokal.
 
-Tidak diganti menjadi Guardian.
+Status
 
-Alasan:
-
-Dashboard selalu menampilkan anak yang sedang aktif.
+Accepted
 
 ---
 
-Decision 002
+## Decision 002
 
-Menu Profil akan berkembang menjadi Family.
+Menggunakan Repository Pattern agar UI tidak langsung mengakses database.
 
-Family menjadi pusat pengelolaan keluarga.
+Status
 
----
-
-Decision 003
-
-Family Foundation dikerjakan sebelum Target Hafalan.
-
-Alasan:
-
-Semua fitur berikutnya akan bergantung pada Child.
+Accepted
 
 ---
 
-Decision 004
+## Decision 003
 
-Arsitektur menggunakan Repository Pattern.
+Setiap Child memiliki data sendiri.
 
-Screen tidak boleh langsung mengakses SQLite.
+Relasi
+
+Guardian
+
+↓
+
+Child
+
+↓
+
+Semua data perkembangan
+
+Alasan
+
+Dashboard harus berubah ketika Child aktif berganti.
+
+Status
+
+Accepted
 
 ---
 
-Decision 005
+## Decision 004
 
-Dashboard hanya menampilkan data.
+Menggunakan CurrentChildService.
 
-Semua perhitungan dilakukan di Service.
+Tujuan
 
----
+Menyimpan Child yang sedang aktif.
 
-Decision 006
+Seluruh Screen mengambil Child dari CurrentChildService.
 
-Target aplikasi adalah keluarga muslim.
+Status
 
-Bukan aplikasi hafalan saja.
-
----
-
-Decision 007
-
-Project menggunakan Living Documentation.
-
-Dokumen selalu diperbarui mengikuti perkembangan project.
+Accepted
 
 ---
 
-Decision 008
+## Decision 005
 
-Setiap milestone harus mengikuti urutan:
+Seluruh data perkembangan wajib mempunyai childId.
 
-Model
+Modul
 
-↓
+- Hafalan
+- Ibadah
+- Target Ibadah
+- Education
+- Reward
+- Achievement
 
-Database
+Alasan
 
-↓
+Satu aplikasi digunakan oleh beberapa anak.
 
-Repository
+Status
 
-↓
+Accepted
 
-Screen
+---
 
-↓
+## Decision 006
 
-Save
+HomeScreen tidak dibongkar.
 
-↓
+Dashboard akan ditingkatkan sedikit demi sedikit agar tidak merusak lebih dari 700 baris kode.
 
-Load
+Status
 
-↓
+Accepted
 
-Dashboard Integration
+---
 
-↓
+## Decision 007
 
-Testing
+Setiap milestone besar wajib memiliki Git Checkpoint.
 
-↓
+Contoh
 
-Documentation
+Checkpoint 1
 
-↓
+Checkpoint 2
 
-Commit
+Checkpoint 3
 
-↓
+dst.
 
-Release
+Tujuan
+
+Jika terjadi kesalahan besar dapat kembali ke kondisi stabil.
+
+Status
+
+Accepted
+
+---
+
+## Decision 008
+
+Setiap selesai milestone, seluruh dokumentasi diperbarui.
+
+Dokumen
+
+01_Vision.md
+
+02_Architecture.md
+
+03_Roadmap.md
+
+04_DecisionLog.md
+
+Tujuan
+
+Agar project dapat dilanjutkan di chat baru tanpa kehilangan konteks.
+
+Status
+
+Accepted
