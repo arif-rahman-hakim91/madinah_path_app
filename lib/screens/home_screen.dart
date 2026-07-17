@@ -29,16 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadProgress() async {
-    final value = await dashboardService.getTodayProgress();
-    final ibadah = await dashboardService.getTodayIbadahCount();
-    final hafalan = await dashboardService.getTodayHafalanCount();
+    final dashboard = await dashboardService.loadDashboard();
 
     if (!mounted) return;
 
     setState(() {
-      progress = value;
-      ibadahCount = ibadah;
-      hafalanCount = hafalan;
+      progress = dashboard.progress;
+      ibadahCount = dashboard.ibadahCount;
+      hafalanCount = dashboard.hafalanCount;
     });
   }
   Future<void> pilihAnak() async {
@@ -50,8 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (result == true && mounted) {
-      setState(() {});
+      await loadProgress();
     }
+
   }
 
   @override
