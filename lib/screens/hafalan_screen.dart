@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/hafalan.dart';
 import '../repositories/hafalan_repository.dart';
+import '../services/current_child_service.dart';
 import 'add_hafalan_screen.dart';
 
 class HafalanScreen extends StatefulWidget {
@@ -23,7 +24,14 @@ class _HafalanScreenState extends State<HafalanScreen> {
   }
 
   void _loadData() {
-    _hafalanFuture = repository.getAll();
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      _hafalanFuture = Future.value([]);
+      return;
+    }
+
+    _hafalanFuture = repository.getAll(child.id!);
   }
 
   @override
@@ -36,16 +44,29 @@ class _HafalanScreenState extends State<HafalanScreen> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () async {
-          await Navigator.push(
+          if (CurrentChildService.currentChild == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  "Silakan pilih anak terlebih dahulu.",
+                ),
+              ),
+            );
+            return;
+          }
+
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddHafalanScreen(),
+              builder: (_) => const AddHafalanScreen(),
             ),
           );
 
-          setState(() {
-            _loadData();
-          });
+          if (result == true) {
+            setState(() {
+              _loadData();
+            });
+          }
         },
       ),
       body: Padding(
@@ -70,6 +91,18 @@ class _HafalanScreenState extends State<HafalanScreen> {
                   );
                 }
 
+                if (CurrentChildService.currentChild == null) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        "Silakan pilih anak aktif terlebih dahulu.",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+
                 final daftarHafalan = snapshot.data ?? [];
 
                 if (daftarHafalan.isEmpty) {
@@ -87,9 +120,9 @@ class _HafalanScreenState extends State<HafalanScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Hafalan Hari Ini",
-                      style: TextStyle(
+                    Text(
+                      "Hafalan ${CurrentChildService.currentChild!.namaPanggilan}",
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -97,56 +130,65 @@ class _HafalanScreenState extends State<HafalanScreen> {
 
                     const SizedBox(height: 20),
 
-                    ...daftarHafalan.map(
-                          (hafalan) => ListTile(
-                        leading: const Icon(
-                          Icons.menu_book,
-                          color: Colors.green,
-                        ),
-                        title: Text(hafalan.namaSurat),
-                        subtitle: Text(
-                          "Ayat : ${hafalan.ayat}",
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddHafalanScreen(
-                                      hafalan: hafalan,
-                                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: daftarHafalan.length,
+                        itemBuilder: (context, index) {
+                          final hafalan = daftarHafalan[index];
+
+                          return ListTile(
+                            leading: const Icon(
+                              Icons.menu_book,
+                              color: Colors.green,
+                            ),
+                            title: Text(hafalan.namaSurat),
+                            subtitle: Text(
+                              "Ayat : ${hafalan.ayat}",
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
                                   ),
-                                );
+                                  onPressed: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => AddHafalanScreen(
+                                          hafalan: hafalan,
+                                        ),
+                                      ),
+                                    );
 
-                                setState(() {
-                                  _loadData();
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ),
-                              onPressed: () async {
-                                if (hafalan.id != null) {
-                                  await repository.delete(hafalan.id!);
+                                    if (result == true) {
+                                      setState(() {
+                                        _loadData();
+                                      });
+                                    }
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () async {
+                                    if (hafalan.id == null) return;
 
-                                  setState(() {
-                                    _loadData();
-                                  });
-                                }
-                              },
+                                    await repository.delete(hafalan.id!);
+
+                                    setState(() {
+                                      _loadData();
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     ),
                   ],

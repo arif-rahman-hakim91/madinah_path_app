@@ -16,17 +16,28 @@ class HafalanRepository {
     );
   }
 
-  Future<List<Hafalan>> getAll() async {
+  Future<List<Hafalan>> getAll(int childId) async {
     final db = await dbHelper.database;
 
     final result = await db.query(
       'hafalan',
+      where: 'childId = ?',
+      whereArgs: [childId],
       orderBy: 'id DESC',
     );
 
-    return result
-        .map((map) => Hafalan.fromMap(map))
-        .toList();
+    return result.map((e) => Hafalan.fromMap(e)).toList();
+  }
+
+  Future<void> update(Hafalan hafalan) async {
+    final db = await dbHelper.database;
+
+    await db.update(
+      'hafalan',
+      hafalan.toMap(),
+      where: 'id = ?',
+      whereArgs: [hafalan.id],
+    );
   }
 
   Future<void> delete(int id) async {
@@ -36,16 +47,6 @@ class HafalanRepository {
       'hafalan',
       where: 'id = ?',
       whereArgs: [id],
-    );
-  }
-  Future<void> update(Hafalan hafalan) async {
-    final db = await dbHelper.database;
-
-    await db.update(
-      'hafalan',
-      hafalan.toMap(),
-      where: 'id = ?',
-      whereArgs: [hafalan.id],
     );
   }
 }

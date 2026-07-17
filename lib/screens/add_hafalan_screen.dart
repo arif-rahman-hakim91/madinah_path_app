@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+
 import '../models/hafalan.dart';
 import '../repositories/hafalan_repository.dart';
+import '../services/current_child_service.dart';
 
 class AddHafalanScreen extends StatefulWidget {
   final Hafalan? hafalan;
+
   const AddHafalanScreen({
     super.key,
-    this.hafalan,});
+    this.hafalan,
+  });
 
   @override
   State<AddHafalanScreen> createState() => _AddHafalanScreenState();
@@ -15,6 +19,7 @@ class AddHafalanScreen extends StatefulWidget {
 class _AddHafalanScreenState extends State<AddHafalanScreen> {
   final TextEditingController suratController = TextEditingController();
   final TextEditingController ayatController = TextEditingController();
+
   final repository = HafalanRepository();
 
   @override
@@ -28,10 +33,21 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
   }
 
   @override
+  void dispose() {
+    suratController.dispose();
+    ayatController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tambah Hafalan"),
+        title: Text(
+          widget.hafalan == null
+              ? "Tambah Hafalan"
+              : "Edit Hafalan",
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -81,9 +97,8 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  if (suratController.text.isEmpty ||
-                      ayatController.text.isEmpty) {
-
+                  if (suratController.text.trim().isEmpty ||
+                      ayatController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -91,35 +106,48 @@ class _AddHafalanScreenState extends State<AddHafalanScreen> {
                         ),
                       ),
                     );
-
                     return;
                   }
-                  if (widget.hafalan == null) {
 
-                    await repository.add(
-                      Hafalan(
-                        namaSurat: suratController.text,
-                        ayat: ayatController.text,
+                  if (CurrentChildService.currentChild == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Silakan pilih anak terlebih dahulu.",
+                        ),
                       ),
                     );
+                    return;
+                  }
 
+                  if (widget.hafalan == null) {
+                    await repository.add(
+                      Hafalan(
+                        childId: CurrentChildService.currentChild!.id!,
+                        namaSurat: suratController.text.trim(),
+                        ayat: ayatController.text.trim(),
+                      ),
+                    );
                   } else {
-
                     await repository.update(
                       Hafalan(
                         id: widget.hafalan!.id,
-                        namaSurat: suratController.text,
-                        ayat: ayatController.text,
+                        childId: widget.hafalan!.childId,
+                        namaSurat: suratController.text.trim(),
+                        ayat: ayatController.text.trim(),
                       ),
                     );
-
                   }
 
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
+                  if (!context.mounted) return;
+
+                  Navigator.pop(context, true);
                 },
-                child: const Text("Simpan"),
+                child: Text(
+                  widget.hafalan == null
+                      ? "Simpan"
+                      : "Update",
+                ),
               ),
             ),
           ],
