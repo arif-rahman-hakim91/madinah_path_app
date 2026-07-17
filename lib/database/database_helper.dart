@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -33,8 +33,10 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE hafalan(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
         namaSurat TEXT NOT NULL,
-        ayat TEXT NOT NULL
+        ayat TEXT NOT NULL,
+        FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
 
@@ -163,6 +165,13 @@ class DatabaseHelper {
           updatedAt TEXT NOT NULL,
           FOREIGN KEY (guardianId) REFERENCES guardian(id)
         )
+      ''');
+    }
+
+    if (oldVersion < 6) {
+      await db.execute('''
+        ALTER TABLE hafalan
+        ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
       ''');
     }
   }
