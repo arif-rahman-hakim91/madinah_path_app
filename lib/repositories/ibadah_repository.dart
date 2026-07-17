@@ -16,11 +16,13 @@ class IbadahRepository {
     );
   }
 
-  Future<List<Ibadah>> getAll() async {
+  Future<List<Ibadah>> getAll(int childId) async {
     final db = await dbHelper.database;
 
     final result = await db.query(
       'ibadah',
+      where: 'childId = ?',
+      whereArgs: [childId],
       orderBy: 'tanggal DESC',
     );
 
@@ -29,7 +31,7 @@ class IbadahRepository {
         .toList();
   }
 
-  Future<Ibadah?> getToday() async {
+  Future<Ibadah?> getToday(int childId) async {
     final db = await dbHelper.database;
 
     final today = DateTime.now()
@@ -38,8 +40,11 @@ class IbadahRepository {
 
     final result = await db.query(
       'ibadah',
-      where: 'substr(tanggal, 1, 10) = ?',
-      whereArgs: [today],
+      where: 'childId = ? AND substr(tanggal, 1, 10) = ?',
+      whereArgs: [
+        childId,
+        today,
+      ],
       limit: 1,
     );
 

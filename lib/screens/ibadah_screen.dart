@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_message.dart';
 import '../models/ibadah.dart';
 import '../repositories/ibadah_repository.dart';
+import '../services/current_child_service.dart';
 import 'ibadah_history_screen.dart';
 
 class IbadahScreen extends StatefulWidget {
@@ -50,7 +51,13 @@ class _IbadahScreenState extends State<IbadahScreen> {
   }
 
   Future<void> loadToday() async {
-    final data = await repository.getToday();
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      return;
+    }
+
+    final data = await repository.getToday(child.id!);
 
     if (!mounted) return;
 
@@ -80,9 +87,16 @@ class _IbadahScreenState extends State<IbadahScreen> {
   }
 
   Future<void> saveToday() async {
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      return;
+    }
+
     if (todayIbadah == null) {
       await repository.add(
         Ibadah(
+          childId: child.id!,
           tanggal: DateTime.now(),
           subuh: subuh,
           dzuhur: dzuhur,
@@ -97,6 +111,7 @@ class _IbadahScreenState extends State<IbadahScreen> {
       await repository.update(
         Ibadah(
           id: todayIbadah!.id,
+          childId: todayIbadah!.childId,
           tanggal: todayIbadah!.tanggal,
           subuh: subuh,
           dzuhur: dzuhur,
@@ -136,105 +151,100 @@ class _IbadahScreenState extends State<IbadahScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Ibadah Hari Ini",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+          if (CurrentChildService.currentChild == null)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  "Silakan pilih anak terlebih dahulu.",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Ibadah Hari Ini - ${CurrentChildService.currentChild!.namaPanggilan}",
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  CheckboxListTile(
-                    value: subuh,
-                    onChanged: (value) {
-                      setState(() => subuh = value ?? false);
-                    },
-                    title: const Text("Shalat Subuh"),
-                  ),
+                    CheckboxListTile(
+                      value: subuh,
+                      onChanged: (v) => setState(() => subuh = v ?? false),
+                      title: const Text("Shalat Subuh"),
+                    ),
 
-                  CheckboxListTile(
-                    value: dzuhur,
-                    onChanged: (value) {
-                      setState(() => dzuhur = value ?? false);
-                    },
-                    title: const Text("Shalat Dzuhur"),
-                  ),
+                    CheckboxListTile(
+                      value: dzuhur,
+                      onChanged: (v) => setState(() => dzuhur = v ?? false),
+                      title: const Text("Shalat Dzuhur"),
+                    ),
 
-                  CheckboxListTile(
-                    value: ashar,
-                    onChanged: (value) {
-                      setState(() => ashar = value ?? false);
-                    },
-                    title: const Text("Shalat Ashar"),
-                  ),
+                    CheckboxListTile(
+                      value: ashar,
+                      onChanged: (v) => setState(() => ashar = v ?? false),
+                      title: const Text("Shalat Ashar"),
+                    ),
 
-                  CheckboxListTile(
-                    value: maghrib,
-                    onChanged: (value) {
-                      setState(() => maghrib = value ?? false);
-                    },
-                    title: const Text("Shalat Maghrib"),
-                  ),
+                    CheckboxListTile(
+                      value: maghrib,
+                      onChanged: (v) => setState(() => maghrib = v ?? false),
+                      title: const Text("Shalat Maghrib"),
+                    ),
 
-                  CheckboxListTile(
-                    value: isya,
-                    onChanged: (value) {
-                      setState(() => isya = value ?? false);
-                    },
-                    title: const Text("Shalat Isya"),
-                  ),
+                    CheckboxListTile(
+                      value: isya,
+                      onChanged: (v) => setState(() => isya = v ?? false),
+                      title: const Text("Shalat Isya"),
+                    ),
 
-                  CheckboxListTile(
-                    value: tilawah,
-                    onChanged: (value) {
-                      setState(() => tilawah = value ?? false);
-                    },
-                    title: const Text("Tilawah"),
-                  ),
+                    CheckboxListTile(
+                      value: tilawah,
+                      onChanged: (v) => setState(() => tilawah = v ?? false),
+                      title: const Text("Tilawah"),
+                    ),
 
-                  CheckboxListTile(
-                    value: dzikir,
-                    onChanged: (value) {
-                      setState(() => dzikir = value ?? false);
-                    },
-                    title: const Text("Dzikir Pagi & Petang"),
-                  ),
+                    CheckboxListTile(
+                      value: dzikir,
+                      onChanged: (v) => setState(() => dzikir = v ?? false),
+                      title: const Text("Dzikir Pagi & Petang"),
+                    ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await saveToday();
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await saveToday();
 
-                        if (!context.mounted) return;
+                          if (!context.mounted) return;
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text(
-                              AppMessage.saveSuccess,
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(AppMessage.saveSuccess),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(seconds: 2),
                             ),
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                      child: const Text("Simpan"),
+                          );
+                        },
+                        child: const Text("Simpan"),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

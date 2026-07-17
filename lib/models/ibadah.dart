@@ -1,6 +1,8 @@
 class Ibadah {
   final int? id;
 
+  final int childId;
+
   final DateTime tanggal;
 
   final bool subuh;
@@ -14,6 +16,7 @@ class Ibadah {
 
   const Ibadah({
     this.id,
+    required this.childId,
     required this.tanggal,
     required this.subuh,
     required this.dzuhur,
@@ -27,6 +30,7 @@ class Ibadah {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'childId': childId,
       'tanggal': tanggal.toIso8601String(),
       'subuh': subuh ? 1 : 0,
       'dzuhur': dzuhur ? 1 : 0,
@@ -40,8 +44,9 @@ class Ibadah {
 
   factory Ibadah.fromMap(Map<String, dynamic> map) {
     return Ibadah(
-      id: map['id'],
-      tanggal: DateTime.parse(map['tanggal']),
+      id: map['id'] as int?,
+      childId: map['childId'] as int,
+      tanggal: DateTime.parse(map['tanggal'] as String),
       subuh: map['subuh'] == 1,
       dzuhur: map['dzuhur'] == 1,
       ashar: map['ashar'] == 1,

@@ -1,15 +1,27 @@
 import '../models/ibadah.dart';
 import '../models/target_ibadah.dart';
+import '../repositories/hafalan_repository.dart';
 import '../repositories/ibadah_repository.dart';
 import '../repositories/target_ibadah_repository.dart';
+import 'current_child_service.dart';
 
 class DashboardService {
   final ibadahRepository = IbadahRepository();
   final targetRepository = TargetIbadahRepository();
+  final hafalanRepository = HafalanRepository();
 
   Future<double> getTodayProgress() async {
-    final Ibadah? ibadah = await ibadahRepository.getToday();
-    final TargetIbadah? target = await targetRepository.getTarget();
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      return 0;
+    }
+
+    final Ibadah? ibadah =
+    await ibadahRepository.getToday(child.id!);
+
+    final TargetIbadah? target =
+    await targetRepository.getTarget();
 
     if (ibadah == null || target == null) {
       return 0;
@@ -61,7 +73,14 @@ class DashboardService {
   }
 
   Future<int> getTodayIbadahCount() async {
-    final Ibadah? ibadah = await ibadahRepository.getToday();
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      return 0;
+    }
+
+    final Ibadah? ibadah =
+    await ibadahRepository.getToday(child.id!);
 
     if (ibadah == null) {
       return 0;
@@ -81,10 +100,15 @@ class DashboardService {
   }
 
   Future<int> getTodayHafalanCount() async {
-    final db = await ibadahRepository.dbHelper.database;
+    final child = CurrentChildService.currentChild;
 
-    final result = await db.query('hafalan');
+    if (child == null) {
+      return 0;
+    }
 
-    return result.length;
+    final hafalan =
+    await hafalanRepository.getAll(child.id!);
+
+    return hafalan.length;
   }
 }

@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -43,6 +43,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE ibadah(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
         tanggal TEXT NOT NULL,
         subuh INTEGER NOT NULL,
         dzuhur INTEGER NOT NULL,
@@ -50,20 +51,23 @@ class DatabaseHelper {
         maghrib INTEGER NOT NULL,
         isya INTEGER NOT NULL,
         tilawah INTEGER NOT NULL,
-        dzikir INTEGER NOT NULL
+        dzikir INTEGER NOT NULL,
+        FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
 
     await db.execute('''
       CREATE TABLE target_ibadah(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
         subuh INTEGER NOT NULL,
         dzuhur INTEGER NOT NULL,
         ashar INTEGER NOT NULL,
         maghrib INTEGER NOT NULL,
         isya INTEGER NOT NULL,
         tilawah INTEGER NOT NULL,
-        dzikir INTEGER NOT NULL
+        dzikir INTEGER NOT NULL,
+        FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
 
@@ -171,6 +175,18 @@ class DatabaseHelper {
     if (oldVersion < 6) {
       await db.execute('''
         ALTER TABLE hafalan
+        ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
+      ''');
+    }
+
+    if (oldVersion < 7) {
+      await db.execute('''
+        ALTER TABLE ibadah
+        ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
+      ''');
+
+      await db.execute('''
+        ALTER TABLE target_ibadah
         ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
       ''');
     }

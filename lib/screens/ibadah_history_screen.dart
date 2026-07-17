@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/ibadah.dart';
 import '../repositories/ibadah_repository.dart';
+import '../services/current_child_service.dart';
 import 'ibadah_detail_screen.dart';
 
 class IbadahHistoryScreen extends StatefulWidget {
@@ -23,7 +24,18 @@ class _IbadahHistoryScreenState
   void initState() {
     super.initState();
 
-    history = repository.getAll();
+    loadHistory();
+  }
+
+  void loadHistory() {
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) {
+      history = Future.value([]);
+      return;
+    }
+
+    history = repository.getAll(child.id!);
   }
 
   @override
@@ -43,8 +55,17 @@ class _IbadahHistoryScreenState
             );
           }
 
-          if (!snapshot.hasData ||
-              snapshot.data!.isEmpty) {
+          if (CurrentChildService.currentChild == null) {
+            return const Center(
+              child: Text(
+                "Silakan pilih anak terlebih dahulu.",
+              ),
+            );
+          }
+
+          final data = snapshot.data ?? [];
+
+          if (data.isEmpty) {
             return const Center(
               child: Text(
                 "Belum ada riwayat ibadah.",
@@ -53,9 +74,9 @@ class _IbadahHistoryScreenState
           }
 
           return ListView.builder(
-            itemCount: snapshot.data!.length,
+            itemCount: data.length,
             itemBuilder: (context, index) {
-              final item = snapshot.data![index];
+              final item = data[index];
 
               return ListTile(
                 leading: const Icon(Icons.calendar_month),
@@ -70,7 +91,9 @@ class _IbadahHistoryScreenState
                   "Subuh : ${item.subuh ? "✓" : "✗"}",
                 ),
 
-                trailing: const Icon(Icons.arrow_forward_ios),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                ),
 
                 onTap: () async {
                   final result = await Navigator.push(
@@ -84,7 +107,7 @@ class _IbadahHistoryScreenState
 
                   if (result == true && mounted) {
                     setState(() {
-                      history = repository.getAll();
+                      loadHistory();
                     });
                   }
                 },
