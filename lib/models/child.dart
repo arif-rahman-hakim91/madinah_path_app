@@ -1,27 +1,28 @@
-class Guardian {
+class Child {
   final int? id;
+
+  final int guardianId;
 
   final String namaLengkap;
   final String namaPanggilan;
+
+  final DateTime tanggalLahir;
+
   final String jenisKelamin;
 
-  final String? email;
-  final String? nomorHp;
   final String? foto;
-  final String? pin;
 
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  const Guardian({
+  const Child({
     this.id,
+    required this.guardianId,
     required this.namaLengkap,
     required this.namaPanggilan,
+    required this.tanggalLahir,
     required this.jenisKelamin,
-    this.email,
-    this.nomorHp,
     this.foto,
-    this.pin,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -29,28 +30,26 @@ class Guardian {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'guardianId': guardianId,
       'namaLengkap': namaLengkap,
       'namaPanggilan': namaPanggilan,
+      'tanggalLahir': tanggalLahir.toIso8601String(),
       'jenisKelamin': jenisKelamin,
-      'email': email,
-      'nomorHp': nomorHp,
       'foto': foto,
-      'pin': pin,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
-  factory Guardian.fromMap(Map<String, dynamic> map) {
-    return Guardian(
+  factory Child.fromMap(Map<String, dynamic> map) {
+    return Child(
       id: map['id'],
+      guardianId: map['guardianId'],
       namaLengkap: map['namaLengkap'],
       namaPanggilan: map['namaPanggilan'],
+      tanggalLahir: DateTime.parse(map['tanggalLahir']),
       jenisKelamin: map['jenisKelamin'],
-      email: map['email'],
-      nomorHp: map['nomorHp'],
       foto: map['foto'],
-      pin: map['pin'],
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
     );

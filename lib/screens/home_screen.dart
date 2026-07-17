@@ -4,6 +4,9 @@ import 'ibadah_screen.dart';
 import 'target_screen.dart';
 import 'profile_screen.dart';
 import '../services/dashboard_service.dart';
+import 'child_selector_screen.dart';
+import '../services/current_child_service.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,6 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ibadahCount = ibadah;
       hafalanCount = hafalan;
     });
+  }
+  Future<void> pilihAnak() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ChildSelectorScreen(),
+      ),
+    );
+
+    if (result == true && mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -99,64 +114,64 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Row(
+              children: [
+                const Row(
                   children: [
                     Icon(
-                      Icons.person,
+                      Icons.child_care,
                       size: 40,
                       color: Colors.green,
                     ),
                     SizedBox(width: 12),
-
-                    Text("Profil Anak",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold
-                    ),
+                    Text(
+                      "Anak Aktif",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
 
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(
-                    Icons.badge,
-                    color: Colors.green,
-                  ),
-                  title: Text("Nama"),
-                  subtitle: Text("Hanifah Sholihah"),
-                ),
-
-                Divider(),
+                const SizedBox(height: 20),
 
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(
-                    Icons.school,
-                    color: Colors.blue,
+                  leading: const Icon(Icons.person),
+                  title: const Text("Nama"),
+                  subtitle: Text(
+                    CurrentChildService.currentChild?.namaLengkap ??
+                        "Belum memilih anak",
                   ),
-                  title: Text("Kelas"),
-                  subtitle: Text("TKA"),
                 ),
-                
-                Divider(),
-                
+
+                const Divider(),
+
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(
-                    Icons.location_city,
-                    color: Colors.orange,
+                  leading: const Icon(Icons.cake),
+                  title: const Text("Nama Panggilan"),
+                  subtitle: Text(
+                    CurrentChildService.currentChild?.namaPanggilan ??
+                        "-",
                   ),
-                  title: Text("Sekolah"),
-                  subtitle: Text("RA Al Misykaah Pekanbaru"),
-                )
-            ],
-            ),
+                ),
+
+                const SizedBox(height: 10),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: pilihAnak,
+                    child: const Text("Ganti Anak"),
+                  ),
+                ),
+              ],
+            )
 
             ),
           ),
-          
+
           const SizedBox(height: 20,),
           
           Card(

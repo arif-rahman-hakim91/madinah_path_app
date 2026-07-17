@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 5,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -64,6 +64,36 @@ class DatabaseHelper {
         dzikir INTEGER NOT NULL
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE guardian(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        namaLengkap TEXT NOT NULL,
+        namaPanggilan TEXT NOT NULL,
+        jenisKelamin TEXT NOT NULL,
+        email TEXT,
+        nomorHp TEXT,
+        foto TEXT,
+        pin TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE child(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        guardianId INTEGER NOT NULL,
+        namaLengkap TEXT NOT NULL,
+        namaPanggilan TEXT NOT NULL,
+        tanggalLahir TEXT NOT NULL,
+        jenisKelamin TEXT NOT NULL,
+        foto TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        FOREIGN KEY (guardianId) REFERENCES guardian(id)
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(
@@ -98,6 +128,40 @@ class DatabaseHelper {
           isya INTEGER NOT NULL,
           tilawah INTEGER NOT NULL,
           dzikir INTEGER NOT NULL
+        )
+      ''');
+    }
+
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS guardian(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          namaLengkap TEXT NOT NULL,
+          namaPanggilan TEXT NOT NULL,
+          jenisKelamin TEXT NOT NULL,
+          email TEXT,
+          nomorHp TEXT,
+          foto TEXT,
+          pin TEXT,
+          createdAt TEXT NOT NULL,
+          updatedAt TEXT NOT NULL
+        )
+      ''');
+    }
+
+    if (oldVersion < 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS child(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          guardianId INTEGER NOT NULL,
+          namaLengkap TEXT NOT NULL,
+          namaPanggilan TEXT NOT NULL,
+          tanggalLahir TEXT NOT NULL,
+          jenisKelamin TEXT NOT NULL,
+          foto TEXT,
+          createdAt TEXT NOT NULL,
+          updatedAt TEXT NOT NULL,
+          FOREIGN KEY (guardianId) REFERENCES guardian(id)
         )
       ''');
     }
