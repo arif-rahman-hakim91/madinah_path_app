@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 7,
+      version: 8,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -98,6 +98,20 @@ class DatabaseHelper {
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         FOREIGN KEY (guardianId) REFERENCES guardian(id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE education(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
+        jenjang TEXT NOT NULL,
+        namaSekolah TEXT NOT NULL,
+        namaGuru TEXT NOT NULL,
+        catatan TEXT NOT NULL,
+        tanggalMulai TEXT NOT NULL,
+        tanggalSelesai TEXT,
+        FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
   }
@@ -188,6 +202,22 @@ class DatabaseHelper {
       await db.execute('''
         ALTER TABLE target_ibadah
         ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
+      ''');
+    }
+
+    if (oldVersion < 8) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS education(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          childId INTEGER NOT NULL,
+          jenjang TEXT NOT NULL,
+          namaSekolah TEXT NOT NULL,
+          namaGuru TEXT NOT NULL,
+          catatan TEXT NOT NULL,
+          tanggalMulai TEXT NOT NULL,
+          tanggalSelesai TEXT,
+          FOREIGN KEY (childId) REFERENCES child(id)
+        )
       ''');
     }
   }

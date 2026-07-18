@@ -62,6 +62,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
+  Widget buildWeeklyItem(
+      String day,
+      double value,
+      ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 40,
+            child: Text(day),
+          ),
+
+          const SizedBox(width: 10),
+
+          Expanded(
+            child: LinearProgressIndicator(
+              value: value,
+              minHeight: 10,
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          Text("${(value * 100).toInt()}%"),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -293,49 +323,54 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      
-                      const Text("Senin"),
-                      
-                      const SizedBox(height: 6,),
-                      
-                      LinearProgressIndicator(
-                        value: weeklyProgress.isNotEmpty
-                            ? weeklyProgress[0]
-                            : 0,
-                        minHeight: 8,
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      const SizedBox(height: 15,),
-                      
-                      const Text("Selasa"),
-                      
-                      const SizedBox(height: 6,),
-                      
-                      LinearProgressIndicator(
-                        value: weeklyProgress.length > 1
+                    children: [buildWeeklyItem(
+                      "Sen",
+                      weeklyProgress.isNotEmpty
+                          ? weeklyProgress[0]
+                          : 0,
+                    ),
+
+                      buildWeeklyItem(
+                        "Sel",
+                        weeklyProgress.length > 1
                             ? weeklyProgress[1]
                             : 0,
-                        minHeight: 8,
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
                       ),
-                      
-                      const SizedBox(height: 15,),
-                      
-                      const Text("Rabu"),
-                      
-                      const SizedBox(height: 6,),
-                      
-                      LinearProgressIndicator(
-                        value: weeklyProgress.length > 2
+
+                      buildWeeklyItem(
+                        "Rab",
+                        weeklyProgress.length > 2
                             ? weeklyProgress[2]
                             : 0,
-                        minHeight: 8,
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(20),
-                      )
+                      ),
+
+                      buildWeeklyItem(
+                        "Kam",
+                        weeklyProgress.length > 3
+                            ? weeklyProgress[3]
+                            : 0,
+                      ),
+
+                      buildWeeklyItem(
+                        "Jum",
+                        weeklyProgress.length > 4
+                            ? weeklyProgress[4]
+                            : 0,
+                      ),
+
+                      buildWeeklyItem(
+                        "Sab",
+                        weeklyProgress.length > 5
+                            ? weeklyProgress[5]
+                            : 0,
+                      ),
+
+                      buildWeeklyItem(
+                        "Min",
+                        weeklyProgress.length > 6
+                            ? weeklyProgress[6]
+                            : 0,
+                      ),
                     ],
                   )
                 ],
