@@ -11,6 +11,10 @@ class CurrentChildService {
     _currentChild = child;
   }
 
+  static void refreshCurrentChild(Child child) {
+    _currentChild = child;
+  }
+
   static bool get hasCurrentChild {
     return _currentChild != null;
   }

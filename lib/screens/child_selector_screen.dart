@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/child.dart';
 import '../repositories/child_repository.dart';
 import '../services/current_child_service.dart';
+import 'add_child_screen.dart';
 
 class ChildSelectorScreen extends StatefulWidget {
   const ChildSelectorScreen({super.key});
@@ -38,11 +39,74 @@ class _ChildSelectorScreenState extends State<ChildSelectorScreen> {
       appBar: AppBar(
         title: const Text("Pilih Anak"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AddChildScreen(),
+                ),
+              );
+
+              await loadChildren();
+            },
+          ),
+        ],
       ),
       body: children.isEmpty
-          ? const Center(
-        child: Text(
-          "Belum ada data anak.",
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            const Icon(
+              Icons.woman,
+              size: 70,
+              color: Colors.grey,
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "Belum ada data anak.",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              "Silakan tambahkan anak terlebih dahulu.",
+            ),
+
+            const SizedBox(height: 24),
+
+            ElevatedButton.icon(
+              onPressed: () async {
+
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AddChildScreen(),
+                  ),
+                );
+
+                if (result == true) {
+                  await loadChildren();
+                }
+
+                await loadChildren();
+              },
+
+              icon: const Icon(Icons.add),
+
+              label: const Text("Tambah Anak"),
+            ),
+          ],
         ),
       )
           : ListView.builder(
@@ -69,6 +133,8 @@ class _ChildSelectorScreenState extends State<ChildSelectorScreen> {
                 : null,
             onTap: () {
               CurrentChildService.setCurrentChild(child);
+
+              if (!mounted) return;
 
               Navigator.pop(context, true);
             },

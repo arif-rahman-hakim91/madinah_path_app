@@ -41,6 +41,30 @@ class Child {
     };
   }
 
+  Child copyWith({
+    int? id,
+    int? guardianId,
+    String? namaLengkap,
+    String? namaPanggilan,
+    DateTime? tanggalLahir,
+    String? jenisKelamin,
+    String? foto,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Child(
+      id: id ?? this.id,
+      guardianId: guardianId ?? this.guardianId,
+      namaLengkap: namaLengkap ?? this.namaLengkap,
+      namaPanggilan: namaPanggilan ?? this.namaPanggilan,
+      tanggalLahir: tanggalLahir ?? this.tanggalLahir,
+      jenisKelamin: jenisKelamin ?? this.jenisKelamin,
+      foto: foto ?? this.foto,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory Child.fromMap(Map<String, dynamic> map) {
     return Child(
       id: map['id'],

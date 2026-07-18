@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 8,
+      version: 10,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -111,6 +111,29 @@ class DatabaseHelper {
         catatan TEXT NOT NULL,
         tanggalMulai TEXT NOT NULL,
         tanggalSelesai TEXT,
+        FOREIGN KEY (childId) REFERENCES child(id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE reward(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
+        point INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        FOREIGN KEY (childId) REFERENCES child(id)
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE achievement(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        unlockedAt TEXT NOT NULL,
         FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
@@ -219,6 +242,35 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
+    }
+
+    if (oldVersion < 9) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS reward(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          childId INTEGER NOT NULL,
+          point INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          createdAt TEXT NOT NULL,
+          FOREIGN KEY (childId) REFERENCES child(id)
+        )
+      ''');
+      }
+
+    if (oldVersion < 10) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS achievement(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          childId INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          icon TEXT NOT NULL,
+          unlockedAt TEXT NOT NULL,
+          FOREIGN KEY (childId) REFERENCES child(id)
+        )
+      ''');
+
     }
   }
 }
