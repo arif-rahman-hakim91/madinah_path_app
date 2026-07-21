@@ -176,4 +176,40 @@ class TargetRepository {
       "selesai": row["selesai"] as int? ?? 0,
     };
   }
+
+  Future<List<Target>> getPendingToday(int childId) async {
+    final db = await dbHelper.database;
+
+    final now = DateTime.now();
+
+    final start = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final end = start.add(
+      const Duration(days: 1),
+    );
+
+    final result = await db.query(
+      'target',
+      where: '''
+      childId = ?
+      AND isCompleted = 0
+      AND targetDate >= ?
+      AND targetDate < ?
+    ''',
+      whereArgs: [
+        childId,
+        start.toIso8601String(),
+        end.toIso8601String(),
+      ],
+      orderBy: 'id ASC',
+    );
+
+    return result
+        .map((e) => Target.fromMap(e))
+        .toList();
+  }
 }

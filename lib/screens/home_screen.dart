@@ -11,6 +11,7 @@ import '../models/guardian.dart';
 import '../repositories/guardian_repository.dart';
 import 'guardian_screen.dart';
 import '../repositories/target_repository.dart';
+import '../models/target.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String strength = "";
   String improvement = "";
   List<double> weeklyProgress = [];
+  List<Target> todayTargets = [];
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     loadGuardian();
     loadProgress();
     loadTargetSummary();
+    loadTodayTargets();
   }
 
   Future<void> loadTargetSummary() async {
@@ -61,6 +64,22 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       totalTargetHariIni = summary["total"] ?? 0;
       targetSelesaiHariIni = summary["selesai"] ?? 0;
+    });
+  }
+
+  Future<void> loadTodayTargets() async {
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) return;
+
+    final result = await targetRepository.getPendingToday(
+      child.id!,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      todayTargets = result;
     });
   }
 
@@ -103,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await loadProgress();
       await loadGuardian();
       await loadTargetSummary();
+      await loadTodayTargets();
 
       if (!mounted) return;
 
@@ -215,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             guardian == null
                 ? "Lengkapi data wali untuk mulai menggunakan aplikasi."
-                : "Pantau perkembangan belajar dan ibadah anak setiap hari.",
+                : "Pantau perkembangan hafalan, ibadah, dan target harian anak.",
             style: const TextStyle(
               fontSize: 15,
               color: Colors.grey,
@@ -307,16 +327,15 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                const Row(
-                  children: [
+                Row(
+                  children: const [
                     Icon(
                       Icons.flag,
                       color: Colors.deepOrange,
                     ),
-
-                    SizedBox(width: 10,),
-
-                    Text("Target Hari Ini",
+                    SizedBox(width: 10),
+                    Text(
+                      "Target Hari Ini",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -325,14 +344,118 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
 
+                const SizedBox(height: 8),
+
+                Text(
+                  todayTargets.isEmpty
+                      ? "Belum ada target untuk hari ini."
+                      : "${todayTargets.length} target siap dikerjakan hari ini.",
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+
                 const SizedBox(height: 20,),
 
-                const Text("Menghafal Surat Al-Fatihah"),
+                if (todayTargets.isEmpty)
+                  const Text(
+                    "Belum ada target hari ini.",
+                  )
+                else
+                  ...todayTargets.take(3).map(
+                        (target) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            target.isCompleted
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: target.isCompleted
+                                ? Colors.green
+                                : Colors.grey,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  target.nama,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  target.kategori,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                if (todayTargets.length > 3)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: TextButton.icon(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TargetScreen(),
+                          ),
+                        );
+
+                        if (result == true) {
+                          await loadTargetSummary();
+                          await loadTodayTargets();
+
+                          if (!mounted) return;
+
+                          setState(() {});
+                        }
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                      label: Text(
+                        "Lihat ${todayTargets.length - 3} target lainnya",
+                      ),
+                    ),
+                  ),
 
                 const SizedBox(height: 10,),
 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Progress Hari Ini",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "$targetSelesaiHariIni/$totalTargetHariIni",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
                 LinearProgressIndicator(
-                  value: progress,
+                  value: totalTargetHariIni == 0
+                      ? 0
+                      : targetSelesaiHariIni / totalTargetHariIni,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -342,7 +465,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    "${(progress * 100).toStringAsFixed(0)}%",
+                    totalTargetHariIni == 0
+                        ? "Belum dimulai"
+                        : "${((targetSelesaiHariIni / totalTargetHariIni) * 100).toStringAsFixed(0)}%",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -352,22 +480,36 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20,),
 
           Card(
-            child: Padding(padding: const EdgeInsets.all(16),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    Text("Ringkasan Hari Ini",
+                children: [
+                  const Text(
+                    "Ringkasan Hari Ini",
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
                     ),
-                    ),
+                  ),
 
                     const SizedBox(height: 20,),
 
+                  Text(
+                    "Ringkasan aktivitas belajar hari ini.",
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSummaryItem(
                           Icons.flag,
@@ -375,16 +517,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           "$targetSelesaiHariIni/$totalTargetHariIni",
                           Colors.green,
                         ),
+
+                        const SizedBox(width: 12),
+
+                        _buildSummaryItem(
+                          Icons.menu_book,
+                          "Hafalan",
+                          hafalanCount.toString(),
+                          Colors.blue,
+                        ),
+
+                        const SizedBox(width: 12),
+
                         _buildSummaryItem(
                           Icons.mosque,
                           "Ibadah",
-                            "$ibadahCount",
-                          Colors.blue
-                        ),
-                        _buildSummaryItem(
-                          Icons.star,
-                          "Progress",
-                          "${(progress * 100).toStringAsFixed(0)}%",
+                          ibadahCount.toString(),
                           Colors.orange,
                         ),
                       ],
@@ -652,48 +800,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),),
           ),
-          Card(
-            child: Padding(padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  const Text("Target Harian",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10,),
-
-                  const Text(
-                    "Kelola target belajar dan ibadah harian."
-                  ),
-
-                  const SizedBox(height: 15,),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TargetScreen(),
-                        ),
-                      );
-
-                      await loadTargetSummary();
-
-                      if (!mounted) return;
-
-                      setState(() {});
-                    }, child: const Text("Buka")),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
           Card(
             child: Padding(padding: const EdgeInsets.all(16),
@@ -818,7 +924,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: const Text("Ibadah"),
                   trailing: const Icon(Icons.arrow_back_ios),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TargetScreen(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const IbadahScreen(),
                       ),
                     );
                   },
@@ -844,31 +953,35 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-Widget _buildSummaryItem(
-    IconData icon,
-    String title,
-    String value,
-    Color color,
-    ) {
-    return Column(
-      children: [
-        Icon(icon,
-        color: color,
-        size: 32,
-        ),
-
-        const SizedBox(height: 8,),
-
-        Text(value,
-        style: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold
-        ),
-        ),
-
-        Text(title)
-
-      ],
+  Widget _buildSummaryItem(
+      IconData icon,
+      String title,
+      String value,
+      Color color,
+      ) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: 32,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
-}
+  }
 }
