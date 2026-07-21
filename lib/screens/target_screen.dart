@@ -126,6 +126,8 @@ class _TargetScreenState extends State<TargetScreen> {
     );
 
     String kategori = target?.kategori ?? "Hafalan";
+    String status =
+        target?.status ?? "Belum Dipelajari";
 
     final result = await showDialog<Target>(
       context: context,
@@ -158,26 +160,194 @@ class _TargetScreenState extends State<TargetScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: const [
+                      // =========================
+                      // AL-QUR'AN
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Murajaah",
+                        child: Text("📖 Murajaah"),
+                      ),
                       DropdownMenuItem(
                         value: "Hafalan",
-                        child: Text("Hafalan"),
+                        child: Text("📖 Hafalan"),
                       ),
                       DropdownMenuItem(
-                        value: "Ibadah",
-                        child: Text("Ibadah"),
+                        value: "Mutqin",
+                        child: Text("📖 Mutqin"),
                       ),
                       DropdownMenuItem(
-                        value: "Adab",
-                        child: Text("Adab"),
+                        value: "Tilawah",
+                        child: Text("📖 Tilawah"),
+                      ),
+
+                      // =========================
+                      // IBADAH
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Shalat",
+                        child: Text("🕌 Shalat"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Dzikir",
+                        child: Text("🕌 Dzikir"),
                       ),
                       DropdownMenuItem(
                         value: "Doa",
-                        child: Text("Doa"),
+                        child: Text("🕌 Doa"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Wudhu",
+                        child: Text("🕌 Wudhu"),
+                      ),
+
+                      // =========================
+                      // ILMU ISLAM
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Hadits",
+                        child: Text("📚 Hadits"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Aqidah",
+                        child: Text("📚 Aqidah"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Fiqih",
+                        child: Text("📚 Fiqih"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Sirah",
+                        child: Text("📚 Sirah"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Asmaul Husna",
+                        child: Text("📚 Asmaul Husna"),
+                      ),
+
+                      // =========================
+                      // ADAB
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Adab",
+                        child: Text("🤲 Adab"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Akhlak",
+                        child: Text("🤲 Akhlak"),
+                      ),
+
+                      // =========================
+                      // BAHASA
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Huruf Hijaiyah",
+                        child: Text("🔤 Huruf Hijaiyah"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Iqra",
+                        child: Text("🔤 Iqra"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Bahasa Arab",
+                        child: Text("🔤 Bahasa Arab"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Huruf Latin",
+                        child: Text("🔤 Huruf Latin"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Membaca",
+                        child: Text("🔤 Membaca"),
+                      ),
+
+                      // =========================
+                      // KOGNITIF
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Berhitung",
+                        child: Text("🧠 Berhitung"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Warna",
+                        child: Text("🧠 Mengenal Warna"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Bentuk",
+                        child: Text("🧠 Mengenal Bentuk"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Pola",
+                        child: Text("🧠 Mengenal Pola"),
+                      ),
+
+                      // =========================
+                      // MOTORIK
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Motorik Halus",
+                        child: Text("✂️ Motorik Halus"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Motorik Kasar",
+                        child: Text("🏃 Motorik Kasar"),
+                      ),
+
+                      // =========================
+                      // LIFE SKILL
+                      // =========================
+                      DropdownMenuItem(
+                        value: "Kemandirian",
+                        child: Text("🏡 Kemandirian"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Life Skill",
+                        child: Text("🏡 Life Skill"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Proyek Amal",
+                        child: Text("❤️ Proyek Amal"),
                       ),
                     ],
                     onChanged: (value) {
                       setDialogState(() {
                         kategori = value!;
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  DropdownButtonFormField<String>(
+                    initialValue: status,
+                    decoration: const InputDecoration(
+                      labelText: "Status Belajar",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: "Belum Dipelajari",
+                        child: Text("Belum Dipelajari"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Belum Lancar",
+                        child: Text("Belum Lancar"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Cukup",
+                        child: Text("Cukup"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Lancar",
+                        child: Text("Lancar"),
+                      ),
+                      DropdownMenuItem(
+                        value: "Mutqin",
+                        child: Text("Mutqin"),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setDialogState(() {
+                        status = value!;
                       });
                     },
                   ),
@@ -203,6 +373,7 @@ class _TargetScreenState extends State<TargetScreen> {
                         childId: child.id!,
                         nama: controller.text.trim(),
                         kategori: kategori,
+                        status: status,
                         isCompleted:
                         target?.isCompleted ?? false,
                         targetDate:

@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 11,
+      version: 12,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -145,6 +145,7 @@ class DatabaseHelper {
         childId INTEGER NOT NULL,
         nama TEXT NOT NULL,
         kategori TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'Belum Dipelajari',
         isCompleted INTEGER NOT NULL,
         targetDate TEXT NOT NULL,
         createdAt TEXT NOT NULL,
@@ -301,6 +302,13 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
+    }
+
+    if (oldVersion < 12) {
+      await db.execute('''
+    ALTER TABLE target
+    ADD COLUMN status TEXT NOT NULL DEFAULT 'Belum Dipelajari'
+  ''');
     }
   }
 }

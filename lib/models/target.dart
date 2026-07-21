@@ -15,6 +15,8 @@ class Target {
 
   final DateTime updatedAt;
 
+  final String status;
+
   const Target({
     this.id,
     required this.childId,
@@ -24,6 +26,7 @@ class Target {
     required this.targetDate,
     required this.createdAt,
     required this.updatedAt,
+    this.status = "Belum Dipelajari",
   });
 
   Target copyWith({
@@ -35,6 +38,7 @@ class Target {
     DateTime? targetDate,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? status,
   }) {
     return Target(
       id: id ?? this.id,
@@ -45,6 +49,7 @@ class Target {
       targetDate: targetDate ?? this.targetDate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      status: status ?? this.status,
     );
   }
 
@@ -54,6 +59,7 @@ class Target {
       'childId': childId,
       'nama': nama,
       'kategori': kategori,
+      'status': status,
       'isCompleted': isCompleted ? 1 : 0,
       'targetDate': targetDate.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
@@ -67,6 +73,7 @@ class Target {
       childId: map['childId'],
       nama: map['nama'],
       kategori: map['kategori'],
+      status: map['status'] ?? "Belum Dipelajari",
       isCompleted: map['isCompleted'] == 1,
       targetDate: DateTime.parse(map['targetDate']),
       createdAt: DateTime.parse(map['createdAt']),

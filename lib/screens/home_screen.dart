@@ -12,6 +12,7 @@ import '../repositories/guardian_repository.dart';
 import 'guardian_screen.dart';
 import '../repositories/target_repository.dart';
 import '../models/target.dart';
+import '../services/learning_engine.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -25,6 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final dashboardService = DashboardService();
   final guardianRepository = GuardianRepository();
   final targetRepository = TargetRepository();
+  final learningEngine = LearningEngine();
+  String learningMessage = "";
+  LearningRecommendation? recommendation;
 
   Guardian? guardian;
 
@@ -72,14 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (child == null) return;
 
-    final result = await targetRepository.getPendingToday(
-      child.id!,
+    final result = await learningEngine.getTodayTargets(
+      child,
     );
 
     if (!mounted) return;
 
     setState(() {
       todayTargets = result;
+
+      learningMessage =
+          learningEngine.getGreetingMessage(result);
+
+      recommendation =
+          learningEngine.generateRecommendation(result);
     });
   }
 
@@ -335,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      "Target Hari Ini",
+                      "Rekomendasi Hari Ini",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -347,13 +357,141 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 8),
 
                 Text(
-                  todayTargets.isEmpty
-                      ? "Belum ada target untuk hari ini."
-                      : "${todayTargets.length} target siap dikerjakan hari ini.",
+                  learningMessage,
                   style: const TextStyle(
                     color: Colors.grey,
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                if (recommendation != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              recommendation!.icon,
+                              color: recommendation!.color,
+                              size: 28,
+                            ),
+
+                            const SizedBox(width: 10),
+
+                            const Text(
+                              "Autopilot Learning Engine",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                recommendation!.title,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: recommendation!.color.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "${recommendation!.estimatedMinutes} menit",
+                                style: TextStyle(
+                                  color: recommendation!.color,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        Chip(
+                          avatar: Icon(
+                            recommendation!.icon,
+                            color: recommendation!.color,
+                            size: 18,
+                          ),
+                          label: Text(recommendation!.category),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        Text(
+                          recommendation!.description,
+                          style: const TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        Text(
+                          "Mengapa direkomendasikan?",
+                          style: TextStyle(
+                            color: recommendation!.color,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        Text(
+                          recommendation!.reason,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.schedule,
+                              color: Colors.green,
+                              size: 18,
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              "${recommendation!.estimatedMinutes} menit",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
 
                 const SizedBox(height: 20,),
 
@@ -799,6 +937,56 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),),
+          ),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Target Harian",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  const Text(
+                    "Kelola target belajar untuk Autopilot Learning Engine.",
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TargetScreen(),
+                          ),
+                        );
+
+                        if (result == true) {
+                          await loadTargetSummary();
+                          await loadTodayTargets();
+
+                          if (!mounted) return;
+
+                          setState(() {});
+                        }
+                      },
+                      child: const Text("Buka"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
 
           Card(
