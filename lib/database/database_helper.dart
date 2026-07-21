@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 10,
+      version: 11,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -126,6 +126,7 @@ class DatabaseHelper {
         FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
+
     await db.execute('''
       CREATE TABLE achievement(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -134,6 +135,20 @@ class DatabaseHelper {
         description TEXT NOT NULL,
         icon TEXT NOT NULL,
         unlockedAt TEXT NOT NULL,
+        FOREIGN KEY (childId) REFERENCES child(id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE target(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        childId INTEGER NOT NULL,
+        nama TEXT NOT NULL,
+        kategori TEXT NOT NULL,
+        isCompleted INTEGER NOT NULL,
+        targetDate TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
         FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
@@ -256,7 +271,7 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
-      }
+    }
 
     if (oldVersion < 10) {
       await db.execute('''
@@ -270,7 +285,22 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
+    }
 
+    if (oldVersion < 11) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS target(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          childId INTEGER NOT NULL,
+          nama TEXT NOT NULL,
+          kategori TEXT NOT NULL,
+          isCompleted INTEGER NOT NULL,
+          targetDate TEXT NOT NULL,
+          createdAt TEXT NOT NULL,
+          updatedAt TEXT NOT NULL,
+          FOREIGN KEY (childId) REFERENCES child(id)
+        )
+      ''');
     }
   }
 }

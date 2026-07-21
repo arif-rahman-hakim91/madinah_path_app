@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../models/guardian.dart';
 import '../repositories/guardian_repository.dart';
+import '../services/photo_service.dart';
 
 class GuardianScreen extends StatefulWidget {
   const GuardianScreen({super.key});
@@ -17,11 +20,14 @@ class _GuardianScreenState extends State<GuardianScreen> {
   final nomorHpController = TextEditingController();
   final pinController = TextEditingController();
 
-  String jenisKelamin = "Ummi";
-
   final repository = GuardianRepository();
+  final photoService = PhotoService();
 
   Guardian? guardian;
+
+  File? selectedImage;
+
+  String jenisKelamin = "Umma";
 
   @override
   void initState() {
@@ -38,6 +44,9 @@ class _GuardianScreenState extends State<GuardianScreen> {
 
     setState(() {
       guardian = data;
+      if (data.foto != null) {
+        selectedImage = File(data.foto!);
+      }
 
       namaLengkapController.text = data.namaLengkap;
       namaPanggilanController.text = data.namaPanggilan;
@@ -45,6 +54,17 @@ class _GuardianScreenState extends State<GuardianScreen> {
       nomorHpController.text = data.nomorHp ?? "";
       pinController.text = data.pin ?? "";
       jenisKelamin = data.jenisKelamin;
+
+    });
+  }
+
+  Future<void> pickPhoto() async {
+    final image = await photoService.pickImage();
+
+    if (image == null) return;
+
+    setState(() {
+      selectedImage = image;
     });
   }
 
@@ -59,29 +79,32 @@ class _GuardianScreenState extends State<GuardianScreen> {
           jenisKelamin: jenisKelamin,
           email: emailController.text,
           nomorHp: nomorHpController.text,
+          foto: selectedImage?.path,
           pin: pinController.text,
           createdAt: now,
           updatedAt: now,
         ),
       );
     } else {
-      await repository.update(
-        Guardian(
-          id: guardian!.id,
-          namaLengkap: namaLengkapController.text,
-          namaPanggilan: namaPanggilanController.text,
-          jenisKelamin: jenisKelamin,
-          email: emailController.text,
-          nomorHp: nomorHpController.text,
-          foto: guardian!.foto,
-          pin: pinController.text,
-          createdAt: guardian!.createdAt,
-          updatedAt: now,
-        ),
+      final updatedGuardian = guardian!.copyWith(
+        namaLengkap: namaLengkapController.text,
+        namaPanggilan: namaPanggilanController.text,
+        jenisKelamin: jenisKelamin,
+        email: emailController.text,
+        nomorHp: nomorHpController.text,
+        foto: selectedImage?.path,
+        pin: pinController.text,
+        updatedAt: now,
       );
+
+      await repository.update(updatedGuardian);
     }
 
     await loadGuardian();
+
+    if (!mounted) return;
+
+    Navigator.pop(context, true);
   }
 
   Widget buildField(
@@ -105,16 +128,6 @@ class _GuardianScreenState extends State<GuardianScreen> {
   }
 
   @override
-  void dispose() {
-    namaLengkapController.dispose();
-    namaPanggilanController.dispose();
-    emailController.dispose();
-    nomorHpController.dispose();
-    pinController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -124,6 +137,36 @@ class _GuardianScreenState extends State<GuardianScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          Center(
+            child: GestureDetector(
+              onTap: pickPhoto,
+              child: CircleAvatar(
+                radius: 55,
+                backgroundImage:
+                selectedImage != null ? FileImage(selectedImage!) : null,
+                child: selectedImage == null
+                    ? const Icon(
+                  Icons.person,
+                  size: 55,
+                )
+                    : null,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          const Center(
+            child: Text(
+              "Ketuk foto untuk mengganti",
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
           buildField(
             "Nama Lengkap",
             namaLengkapController,
@@ -186,15 +229,6 @@ class _GuardianScreenState extends State<GuardianScreen> {
               onPressed: () async {
                 await saveGuardian();
 
-                if (!context.mounted) return;
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Data wali berhasil disimpan.",
-                    ),
-                  ),
-                );
               },
               child: const Text("Simpan"),
             ),
@@ -202,5 +236,15 @@ class _GuardianScreenState extends State<GuardianScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    namaLengkapController.dispose();
+    namaPanggilanController.dispose();
+    emailController.dispose();
+    nomorHpController.dispose();
+    pinController.dispose();
+    super.dispose();
   }
 }

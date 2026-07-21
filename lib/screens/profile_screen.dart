@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/photo_service.dart';
 import '../repositories/child_repository.dart';
 import '../services/current_child_service.dart';
+import 'guardian_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -53,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          /*anak*/
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -121,6 +123,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: const Text("Pencapaian"),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+          /*wali*/
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Profil Wali",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  const Text(
+                    "Kelola data dan foto wali.",
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const GuardianScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text("Buka"),
+                    ),
                   ),
                 ],
               ),

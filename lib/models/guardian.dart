@@ -41,6 +41,32 @@ class Guardian {
     };
   }
 
+  Guardian copyWith({
+    int? id,
+    String? namaLengkap,
+    String? namaPanggilan,
+    String? jenisKelamin,
+    String? email,
+    String? nomorHp,
+    String? foto,
+    String? pin,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Guardian(
+      id: id ?? this.id,
+      namaLengkap: namaLengkap ?? this.namaLengkap,
+      namaPanggilan: namaPanggilan ?? this.namaPanggilan,
+      jenisKelamin: jenisKelamin ?? this.jenisKelamin,
+      email: email ?? this.email,
+      nomorHp: nomorHp ?? this.nomorHp,
+      foto: foto ?? this.foto,
+      pin: pin ?? this.pin,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory Guardian.fromMap(Map<String, dynamic> map) {
     return Guardian(
       id: map['id'],

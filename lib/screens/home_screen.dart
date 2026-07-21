@@ -6,6 +6,11 @@ import 'profile_screen.dart';
 import '../services/dashboard_service.dart';
 import 'child_selector_screen.dart';
 import '../services/current_child_service.dart';
+import 'dart:io';
+import '../models/guardian.dart';
+import '../repositories/guardian_repository.dart';
+import 'guardian_screen.dart';
+import '../repositories/target_repository.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -17,10 +22,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final dashboardService = DashboardService();
+  final guardianRepository = GuardianRepository();
+  final targetRepository = TargetRepository();
+
+  Guardian? guardian;
 
   double progress = 0;
   int ibadahCount = 0;
   int hafalanCount = 0;
+
+  int totalTargetHariIni = 0;
+  int targetSelesaiHariIni = 0;
 
   String strength = "";
   String improvement = "";
@@ -29,7 +41,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    loadGuardian();
     loadProgress();
+    loadTargetSummary();
+  }
+
+  Future<void> loadTargetSummary() async {
+    final child = CurrentChildService.currentChild;
+
+    if (child == null) return;
+
+    final summary = await targetRepository.getTodaySummary(
+      child.id!,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      totalTargetHariIni = summary["total"] ?? 0;
+      targetSelesaiHariIni = summary["selesai"] ?? 0;
+    });
   }
 
   Future<void> loadProgress() async {
@@ -48,6 +80,17 @@ class _HomeScreenState extends State<HomeScreen> {
       weeklyProgress = dashboard.weeklyProgress;
     });
   }
+
+  Future<void> loadGuardian() async {
+    final data = await guardianRepository.getGuardian();
+
+    if (!mounted) return;
+
+    setState(() {
+      guardian = data;
+    });
+  }
+
   Future<void> pilihAnak() async {
     final result = await Navigator.push(
       context,
@@ -56,8 +99,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    if (result == true && mounted) {
+    if (result == true) {
       await loadProgress();
+      await loadGuardian();
+      await loadTargetSummary();
+
+      if (!mounted) return;
+
+      setState(() {});
     }
 
   }
@@ -102,51 +151,79 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-         
+
           Row(
             children: [
 
               CircleAvatar(
                 radius: 28,
                 backgroundColor: Colors.green.shade100,
-                child: const Icon(
-                  Icons.person,
-                  color: Colors.green,
-                  size: 30,
-                ),
+                backgroundImage: guardian?.foto != null
+                    ? FileImage(
+                  File(guardian!.foto!),
+                )
+                    : null,
+                child: guardian?.foto == null
+                    ? Text(
+                  guardian == null
+                      ? "?"
+                      : guardian!.namaPanggilan
+                      .substring(0, 1)
+                      .toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.green,
+                  ),
+                )
+                    : null,
               ),
 
               const SizedBox(width: 10,),
-              
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
+              Expanded(child:
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      guardian == null
+                          ? "ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ"
+                          : "ٱلسَّلَامُ عَلَيْكُمْ ${guardian!.jenisKelamin}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
 
-                  Text("Ahlan Wa Sahlan",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold
-                  ),)
-                ],
+                    Text(
+                      guardian == null
+                          ? "Ahlan Wa Sahlan"
+                          : "Ahlan Wa Sahlan, \n"
+                          "${guardian!.namaPanggilan}",
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
 
           const SizedBox(height: 10,),
 
-          const Text("Pantau perkembangan belajar dan ibadah anak setiap hari",
-          style: TextStyle(fontSize: 15,
-          color: Colors.grey),
+          Text(
+            guardian == null
+                ? "Lengkapi data wali untuk mulai menggunakan aplikasi."
+                : "Pantau perkembangan belajar dan ibadah anak setiap hari.",
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.grey,
+            ),
           ),
 
           const SizedBox(height: 30,),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -175,8 +252,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.person),
+
+                  leading: CircleAvatar(
+                    backgroundImage: CurrentChildService.currentChild?.foto != null
+                        ? FileImage(
+                      File(CurrentChildService.currentChild!.foto!),
+                    )
+                        : null,
+                    child: CurrentChildService.currentChild?.foto == null
+                        ? const Icon(Icons.child_care)
+                        : null,
+                  ),
+
                   title: const Text("Nama"),
+
                   subtitle: Text(
                     CurrentChildService.currentChild?.namaLengkap ??
                         "Belum memilih anak",
@@ -211,22 +300,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 20,),
-          
+
           Card(
             child: Padding(padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                
+
                 const Row(
                   children: [
                     Icon(
                       Icons.flag,
                       color: Colors.deepOrange,
                     ),
-                    
+
                     SizedBox(width: 10,),
-                    
+
                     Text("Target Hari Ini",
                       style: TextStyle(
                         fontSize: 20,
@@ -235,21 +324,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 20,),
-                
+
                 const Text("Menghafal Surat Al-Fatihah"),
-                
+
                 const SizedBox(height: 10,),
-                
+
                 LinearProgressIndicator(
                   value: progress,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                
+
                 const SizedBox(height: 8,),
-                
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
@@ -281,10 +370,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildSummaryItem(
-                          Icons.menu_book,
-                          "Hafalan",
-                          "$hafalanCount",
-                          Colors.green,),
+                          Icons.flag,
+                          "Target",
+                          "$targetSelesaiHariIni/$totalTargetHariIni",
+                          Colors.green,
+                        ),
                         _buildSummaryItem(
                           Icons.mosque,
                           "Ibadah",
@@ -517,7 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          
+
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(onPressed: () {
@@ -585,10 +675,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => TargetScreen(),
+                    child: ElevatedButton(onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TargetScreen(),
                         ),
                       );
+
+                      await loadTargetSummary();
+
+                      if (!mounted) return;
+
+                      setState(() {});
                     }, child: const Text("Buka")),
                   ),
                 ],
@@ -603,7 +702,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
 
                 const Text(
-                  "Profil",
+                  "Profil Anak",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold
@@ -628,6 +727,74 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),),
           ),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Profil Wali",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Text(
+                    guardian == null
+                        ? "Silakan lengkapi data wali terlebih dahulu."
+                        : guardian!.namaLengkap,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const GuardianScreen(),
+                          ),
+                        );
+
+                        if (result == true) {
+                          await loadGuardian();
+                          await loadProgress();
+
+                          if (!mounted) return;
+
+                          setState(() {});
+                        }
+                      },
+                      child: Text(
+                        guardian == null
+                            ? "Tambah Data Wali"
+                            : "Edit Data Wali",
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    guardian == null
+                        ? "-"
+                        : guardian!.jenisKelamin,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           Card(
             child: Column(
               children: [
@@ -661,7 +828,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 ListTile(
                   leading: const Icon(Icons.person),
-                  title: const Text("Profil"),
+                  title: const Text("Profil anak"),
                   trailing: const Icon(Icons.arrow_back_ios),
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),
