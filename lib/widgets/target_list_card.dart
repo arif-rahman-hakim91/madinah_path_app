@@ -23,18 +23,30 @@ class TargetListCard extends StatelessWidget {
       children: [
         const SizedBox(height: 20),
 
-        const Text(
-          "Target Belajar",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        const Row(
+          children: [
+
+            Icon(
+              Icons.auto_awesome,
+              color: Colors.green,
+              size: 22,
+            ),
+
+            SizedBox(width: 8),
+
+            Text(
+              "Target Belajar Hari Ini",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
 
         const SizedBox(height: 12),
 
-        ...learningFlow.take(5).map((target) {
-
+        ...learningFlow.take(5).toList().map((target) {
           Color statusColor;
 
           switch (target.status) {
@@ -44,6 +56,10 @@ class TargetListCard extends StatelessWidget {
 
             case "Belum Dipelajari":
               statusColor = Colors.red;
+              break;
+
+            case "Cukup":
+              statusColor = Colors.amber;
               break;
 
             case "Lancar":
@@ -70,36 +86,47 @@ class TargetListCard extends StatelessWidget {
             child: ListTile(
               onTap: () => onTap(target),
 
-              leading: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: target.isCompleted
-                      ? Colors.green.shade100
-                      : Colors.grey.shade100,
-                  shape: BoxShape.circle,
-                ),
+              leading: CircleAvatar(
+                backgroundColor: target.isCompleted
+                    ? Colors.green.shade100
+                    : Colors.grey.shade200,
                 child: Icon(
                   target.isCompleted
                       ? Icons.check
-                      : Icons.play_arrow,
+                      : Icons.menu_book,
                   color: target.isCompleted
                       ? Colors.green
-                      : Colors.orange,
+                      : Colors.grey,
                 ),
               ),
 
               title: Text(
                 target.nama,
                 style: const TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
 
-              subtitle: Text(
-                target.kategori,
-                style: const TextStyle(
-                  color: Colors.grey,
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    target.kategori,
+                    style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
 

@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
-import 'hafalan_screen.dart';
-import 'ibadah_screen.dart';
-import 'target_screen.dart';
-import 'profile_screen.dart';
-import '../services/dashboard_service.dart';
-import 'child_selector_screen.dart';
-import '../services/current_child_service.dart';
+
+// Models
 import '../models/guardian.dart';
-import '../repositories/guardian_repository.dart';
-import 'guardian_screen.dart';
-import '../repositories/target_repository.dart';
 import '../models/target.dart';
+
+// Repositories
+import '../repositories/guardian_repository.dart';
+import '../repositories/target_repository.dart';
+
+// Services
+import '../services/current_child_service.dart';
+import '../services/dashboard_service.dart';
 import '../services/learning_engine.dart';
-import '../widgets/target_today_card.dart';
-import '../widgets/greeting_header.dart';
+
+// Widgets
 import '../widgets/active_child_card.dart';
-import '../widgets/target_list_card.dart';
-import '../widgets/summary_card.dart';
-import '../widgets/weekly_consistency_card.dart';
-import '../widgets/strength_card.dart';
+import '../widgets/greeting_header.dart';
 import '../widgets/navigation_card.dart';
 import '../widgets/profile_guardian_card.dart';
 import '../widgets/quick_menu_card.dart';
+import '../widgets/strength_card.dart';
+import '../widgets/summary_card.dart';
+import '../widgets/target_list_card.dart';
+import '../widgets/target_today_card.dart';
+import '../widgets/weekly_consistency_card.dart';
+
+// Screens
+import 'child_selector_screen.dart';
+import 'guardian_screen.dart';
+import 'hafalan_screen.dart';
+import 'ibadah_screen.dart';
+import 'profile_screen.dart';
+import 'target_screen.dart';
 
 
 
@@ -174,7 +184,6 @@ class _HomeScreenState extends State<HomeScreen> {
             guardian: guardian,
           ),
 
-          const SizedBox(height: 30),
 
           const SizedBox(height: 30,),
 //ACTIVE CHILD CARD.DART
@@ -194,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 TargetTodayCard(
                   totalTargetHariIni: totalTargetHariIni,
                   targetSelesaiHariIni: targetSelesaiHariIni,
+                  learningMessage: learningMessage,
                 ),
 //TARGET LIST CARD.DART
                 TargetListCard(
@@ -208,8 +218,93 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       builder: (context) {
-                        // sementara copy isi BottomSheet lama ke sini
-                        return const SizedBox();
+                        return Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                target.nama,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Text(
+                                target.kategori,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              const Text(
+                                "Bagaimana hasil belajar hari ini?",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              _evaluationButton(
+                                icon: Icons.refresh,
+                                title: "Belum Lancar",
+                                color: Colors.orange,
+                                onTap: () async {
+                                  await updateTargetStatus(
+                                    target,
+                                    "Belum Lancar",
+                                  );
+                                },
+                              ),
+
+                              _evaluationButton(
+                                icon: Icons.trending_up,
+                                title: "Cukup",
+                                color: Colors.blue,
+                                onTap: () async {
+                                  await updateTargetStatus(
+                                    target,
+                                    "Cukup",
+                                  );
+                                },
+                              ),
+
+                              _evaluationButton(
+                                icon: Icons.check_circle,
+                                title: "Lancar",
+                                color: Colors.green,
+                                onTap: () async {
+                                  await updateTargetStatus(
+                                    target,
+                                    "Lancar",
+                                  );
+                                },
+                              ),
+
+                              _evaluationButton(
+                                icon: Icons.workspace_premium,
+                                title: "Mutqin",
+                                color: Colors.purple,
+                                onTap: () async {
+                                  await updateTargetStatus(
+                                    target,
+                                    "Mutqin",
+                                  );
+                                },
+                              ),
+
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        );
                       },
                     );
                   },
@@ -360,5 +455,53 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Future<void> updateTargetStatus(
+      Target target,
+      String status,
+      ) async {
+    final updated = target.copyWith(
+      status: status,
+      isCompleted: status == "Mutqin",
+      updatedAt: DateTime.now(),
+    );
+
+    await targetRepository.update(updated);
+
+    if (!mounted) return;
+
+    Navigator.pop(context);
+
+    await Future.wait([
+      loadTargetSummary(),
+      loadTodayTargets(),
+      loadProgress(),
+    ]);
+
+    setState(() {});
+  }
+
+  Widget _evaluationButton({
+  required IconData icon,
+  required String title,
+  required Color color,
+  required VoidCallback onTap,
+}) {
+  return Card(
+    margin: const EdgeInsets.only(bottom: 12),
+    child: ListTile(
+      onTap: onTap,
+      leading: CircleAvatar(
+        backgroundColor: color.withValues(alpha: 0.15),
+        child: Icon(
+          icon,
+          color: color,
+        ),
+      ),
+      title: Text(title),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+    ),
+  );
+}
 
 }

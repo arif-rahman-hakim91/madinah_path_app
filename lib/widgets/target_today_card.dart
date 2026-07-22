@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class TargetTodayCard extends StatelessWidget {
   final int totalTargetHariIni;
   final int targetSelesaiHariIni;
+  final String? learningMessage;
 
   const TargetTodayCard({
     super.key,
     required this.totalTargetHariIni,
     required this.targetSelesaiHariIni,
+    this.learningMessage,
   });
 
   @override
@@ -42,11 +44,27 @@ class TargetTodayCard extends StatelessWidget {
                 ),
               ),
 
-              Text(
-                "$targetSelesaiHariIni/$totalTargetHariIni",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "$targetSelesaiHariIni/$totalTargetHariIni",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  Text(
+                    totalTargetHariIni == 0
+                        ? "0%"
+                        : "${((targetSelesaiHariIni / totalTargetHariIni) * 100).toStringAsFixed(0)}%",
+                    style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -60,6 +78,16 @@ class TargetTodayCard extends StatelessWidget {
                   ? 0
                   : targetSelesaiHariIni / totalTargetHariIni,
               minHeight: 10,
+              borderRadius: BorderRadius.circular(30),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                totalTargetHariIni == 0
+                    ? Colors.grey
+                    : (targetSelesaiHariIni / totalTargetHariIni) >= 0.8
+                    ? Colors.green
+                    : (targetSelesaiHariIni / totalTargetHariIni) >= 0.5
+                    ? Colors.orange
+                    : Colors.red,
+              ),
             ),
           ),
 
@@ -68,11 +96,24 @@ class TargetTodayCard extends StatelessWidget {
           Text(
             totalTargetHariIni == 0
                 ? "Belum ada target hari ini."
-                : "$totalTargetHariIni target belajar hari ini.",
+                : "🎯 $totalTargetHariIni target belajar hari ini.",
             style: const TextStyle(
               color: Colors.grey,
             ),
           ),
+
+          if (learningMessage != null &&
+              learningMessage!.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+
+            Text(
+              learningMessage!,
+              style: TextStyle(
+                color: Colors.green.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ],
       ),
     );
