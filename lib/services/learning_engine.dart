@@ -2,6 +2,8 @@ import '../models/child.dart';
 import '../models/target.dart';
 import '../repositories/target_repository.dart';
 import 'package:flutter/material.dart';
+import 'priority_engine.dart';
+import 'status_priority.dart';
 
 class LearningRecommendation {
   final String title;
@@ -27,68 +29,6 @@ class LearningRecommendation {
 class LearningEngine {
   final TargetRepository targetRepository = TargetRepository();
 
-  static const Map<String, int> priority = {
-    // =========================
-    // AL-QUR'AN
-    // =========================
-    "Murajaah": 1,
-    "Hafalan": 2,
-    "Mutqin": 3,
-    "Tilawah": 4,
-
-    // =========================
-    // IBADAH
-    // =========================
-    "Shalat": 5,
-    "Dzikir": 6,
-    "Doa": 7,
-    "Wudhu": 8,
-
-    // =========================
-    // ILMU ISLAM
-    // =========================
-    "Hadits": 9,
-    "Aqidah": 10,
-    "Fiqih": 11,
-    "Sirah": 12,
-    "Asmaul Husna": 13,
-
-    // =========================
-    // ADAB
-    // =========================
-    "Adab": 14,
-    "Akhlak": 15,
-
-    // =========================
-    // BAHASA
-    // =========================
-    "Huruf Hijaiyah": 16,
-    "Iqra": 17,
-    "Bahasa Arab": 18,
-    "Huruf Latin": 19,
-    "Membaca": 20,
-
-    // =========================
-    // KOGNITIF
-    // =========================
-    "Berhitung": 21,
-    "Warna": 22,
-    "Bentuk": 23,
-    "Pola": 24,
-
-    // =========================
-    // MOTORIK
-    // =========================
-    "Motorik Halus": 25,
-    "Motorik Kasar": 26,
-
-    // =========================
-    // LIFE SKILL
-    // =========================
-    "Kemandirian": 27,
-    "Life Skill": 28,
-    "Proyek Amal": 29,
-  };
 
   Future<List<Target>> getTodayTargets(
       Child child,
@@ -99,8 +39,10 @@ class LearningEngine {
 
     targets.sort(
           (a, b) {
-        final aPriority = priority[a.kategori] ?? 999;
-        final bPriority = priority[b.kategori] ?? 999;
+            final aPriority =
+                PriorityEngine.priority[a.kategori] ?? 999;
+            final bPriority =
+                PriorityEngine.priority[b.kategori] ?? 999;
 
         return aPriority.compareTo(bPriority);
       },
@@ -245,23 +187,22 @@ class LearningEngine {
     final sortedTargets = [...targets];
 
     sortedTargets.sort((a, b) {
-      final aPriority = priority[a.kategori] ?? 999;
-      final bPriority = priority[b.kategori] ?? 999;
+      final aPriority =
+          PriorityEngine.priority[a.kategori] ?? 999;
+
+      final bPriority =
+          PriorityEngine.priority[b.kategori] ?? 999;
 
       if (aPriority != bPriority) {
         return aPriority.compareTo(bPriority);
       }
 
-      const statusPriority = {
-        "Belum Lancar": 1,
-        "Belum Dipelajari": 2,
-        "Cukup": 3,
-        "Lancar": 4,
-        "Mutqin": 5,
-      };
 
-      final aStatus = statusPriority[a.status] ?? 999;
-      final bStatus = statusPriority[b.status] ?? 999;
+      final aStatus =
+          StatusPriority.priority[a.status] ?? 999;
+
+      final bStatus =
+          StatusPriority.priority[b.status] ?? 999;
 
       return aStatus.compareTo(bStatus);
     });
@@ -678,7 +619,33 @@ class LearningEngine {
 
   }
 
+  List<Target> generateLearningFlow(
+      List<Target> targets,
+      ) {
+    final result = [...targets];
 
+    result.sort((a, b) {
+      final aPriority =
+          PriorityEngine.priority[a.kategori] ?? 999;
+
+      final bPriority =
+          PriorityEngine.priority[b.kategori] ?? 999;
+
+      if (aPriority != bPriority) {
+        return aPriority.compareTo(bPriority);
+      }
+
+      final aStatus =
+          StatusPriority.priority[a.status] ?? 999;
+
+      final bStatus =
+          StatusPriority.priority[b.status] ?? 999;
+
+      return aStatus.compareTo(bStatus);
+    });
+
+    return result;
+  }
 
 }
 

@@ -15,6 +15,7 @@ import '../models/target.dart';
 import '../services/learning_engine.dart';
 
 
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -26,7 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final dashboardService = DashboardService();
   final guardianRepository = GuardianRepository();
   final targetRepository = TargetRepository();
-  final learningEngine = LearningEngine();
+  final LearningEngine learningEngine = LearningEngine();
+
+  List<Target> learningFlow = [];
   String learningMessage = "";
   LearningRecommendation? recommendation;
 
@@ -84,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       todayTargets = result;
+
+      learningFlow =
+          learningEngine.generateLearningFlow(result);
 
       learningMessage =
           learningEngine.getGreetingMessage(result);
@@ -492,6 +498,40 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+
+                if (learningFlow.isNotEmpty) ...[
+                  const Text(
+                    "Urutan Belajar Hari Ini",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  ...learningFlow.take(5).toList().asMap().entries.map(
+                        (entry) {
+                      final index = entry.key;
+                      final target = entry.value;
+
+                      return ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          radius: 14,
+                          child: Text("${index + 1}"),
+                        ),
+                        title: Text(target.nama),
+                        subtitle: Text(
+                          "${target.kategori} • ${target.status}",
+                        ),
+                      );
+                    },
+                  ),
+
+                  const Divider(),
+                ],
 
                 const SizedBox(height: 20,),
 
