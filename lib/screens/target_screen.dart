@@ -141,6 +141,10 @@ class _TargetScreenState extends State<TargetScreen> {
     }
 
     await loadTargets();
+
+    if (!mounted) return;
+
+    Navigator.pop(context, true);
   }
 
   Future<void> showTargetForm({
@@ -435,6 +439,12 @@ class _TargetScreenState extends State<TargetScreen> {
       appBar: AppBar(
         title: const Text("Target Harian"),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
