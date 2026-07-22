@@ -40,8 +40,37 @@ class _TargetScreenState extends State<TargetScreen> {
   }
 
   Future<void> toggleTarget(Target target) async {
+    final bool completed = !target.isCompleted;
+
+    String status = target.status;
+
+    if (completed) {
+      switch (target.status) {
+        case "Belum Dipelajari":
+          status = "Belum Lancar";
+          break;
+
+        case "Belum Lancar":
+          status = "Cukup";
+          break;
+
+        case "Cukup":
+          status = "Lancar";
+          break;
+
+        case "Lancar":
+          status = "Mutqin";
+          break;
+
+        case "Mutqin":
+          status = "Mutqin";
+          break;
+      }
+    }
+
     final updated = target.copyWith(
-      isCompleted: !target.isCompleted,
+      isCompleted: completed,
+      status: status,
       updatedAt: DateTime.now(),
     );
 

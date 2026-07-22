@@ -242,7 +242,32 @@ class LearningEngine {
       );
     }
 
-    final target = targets.first;
+    final sortedTargets = [...targets];
+
+    sortedTargets.sort((a, b) {
+      final aPriority = priority[a.kategori] ?? 999;
+      final bPriority = priority[b.kategori] ?? 999;
+
+      if (aPriority != bPriority) {
+        return aPriority.compareTo(bPriority);
+      }
+
+      const statusPriority = {
+        "Belum Lancar": 1,
+        "Belum Dipelajari": 2,
+        "Cukup": 3,
+        "Lancar": 4,
+        "Mutqin": 5,
+      };
+
+      final aStatus = statusPriority[a.status] ?? 999;
+      final bStatus = statusPriority[b.status] ?? 999;
+
+      return aStatus.compareTo(bStatus);
+    });
+
+    final target = sortedTargets.first;
+
 
     String description = "Fokus utama belajar hari ini.";
     String reason = "Learning Engine memilih target dengan prioritas tertinggi.";
@@ -253,21 +278,65 @@ class LearningEngine {
 
     switch (target.kategori) {
       case "Murajaah":
-        description =
-        "Sudah waktunya mengulang hafalan agar tetap kuat.";
-        reason =
-        "Murajaah memiliki prioritas tertinggi pada Learning Engine.";
-        estimatedMinutes = 15;
+
+        if (target.status == "Belum Lancar") {
+          description =
+          "Murajaah perlu diulang karena belum lancar.";
+          reason =
+          "Engine mendeteksi hafalan belum lancar.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Mutqin") {
+          description =
+          "Cukup lakukan murajaah ringan.";
+          reason =
+          "Hafalan sudah mutqin.";
+          estimatedMinutes = 5;
+        } else {
+          description =
+          "Sudah waktunya mengulang hafalan agar tetap kuat.";
+          reason =
+          "Murajaah memiliki prioritas tertinggi.";
+          estimatedMinutes = 15;
+        }
+
         icon = Icons.menu_book;
         color = Colors.green;
         break;
 
       case "Hafalan":
-        description =
-        "Hari ini saat yang baik untuk menambah hafalan baru.";
-        reason =
-        "Murajaah hari ini sudah aman sehingga dapat melanjutkan hafalan.";
-        estimatedMinutes = 20;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Hari ini mulai hafalan baru secara bertahap.";
+          reason =
+          "Materi belum pernah dipelajari.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi hafalan hingga lebih lancar.";
+          reason =
+          "Engine mendeteksi hafalan belum lancar.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Perkuat hafalan agar semakin mantap.";
+          reason =
+          "Hafalan sudah berkembang dan perlu diperkuat.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Pertahankan hafalan dengan pengulangan ringan.";
+          reason =
+          "Hafalan sudah lancar.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Hafalan sudah mutqin, lanjut ke hafalan berikutnya.";
+          reason =
+          "Engine siap merekomendasikan materi baru.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.menu_book;
         color = Colors.green;
         break;
@@ -283,81 +352,305 @@ class LearningEngine {
         break;
 
       case "Tilawah":
-        description =
-        "Tilawah untuk menjaga kelancaran bacaan.";
-        reason =
-        "Tilawah dipilih agar bacaan Al-Qur'an tetap lancar dan terjaga.";
-        estimatedMinutes = 15;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai membiasakan membaca Al-Qur'an secara bertahap.";
+          reason =
+          "Tilawah belum pernah dipelajari.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi bacaan hingga lebih lancar dan benar.";
+          reason =
+          "Engine mendeteksi bacaan masih perlu diperbaiki.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Lanjutkan tilawah untuk meningkatkan kelancaran.";
+          reason =
+          "Kemampuan membaca sudah berkembang dan perlu ditingkatkan.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Jaga kelancaran dengan tilawah rutin setiap hari.";
+          reason =
+          "Tilawah sudah lancar dan perlu dijaga konsistensinya.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Tilawah sudah sangat baik, lanjutkan sebagai murajaah rutin.";
+          reason =
+          "Kemampuan membaca sudah stabil.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.auto_stories;
         color = Colors.green;
         break;
 
       case "Shalat":
-        description =
-        "Jaga shalat tepat waktu dengan penuh kekhusyukan.";
-        reason =
-        "Shalat merupakan ibadah harian yang menjadi prioritas utama.";
-        estimatedMinutes = 10;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai mengenalkan tata cara shalat sesuai kemampuan anak.";
+          reason =
+          "Anak baru mulai mempelajari shalat.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Latih kembali gerakan dan bacaan shalat secara bertahap.";
+          reason =
+          "Engine mendeteksi latihan shalat masih perlu pengulangan.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Lanjutkan latihan agar gerakan dan bacaan semakin baik.";
+          reason =
+          "Kemampuan shalat sudah berkembang namun masih perlu penguatan.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Pertahankan kebiasaan shalat tepat waktu.";
+          reason =
+          "Shalat sudah berjalan dengan baik dan perlu dijaga konsistensinya.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Pertahankan shalat dan jadikan kebiasaan harian.";
+          reason =
+          "Kemampuan shalat sudah sangat baik.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.mosque;
         color = Colors.teal;
         break;
 
       case "Dzikir":
-        description =
-        "Luangkan waktu untuk dzikir pagi atau petang.";
-        reason =
-        "Dzikir membantu membiasakan anak mengingat Allah dalam kehidupan sehari-hari.";
-        estimatedMinutes = 10;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai mengenalkan dzikir harian secara bertahap.";
+          reason =
+          "Anak baru mulai belajar dzikir.";
+          estimatedMinutes = 10;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi dzikir agar lebih lancar dan mudah diingat.";
+          reason =
+          "Engine mendeteksi dzikir masih perlu pengulangan.";
+          estimatedMinutes = 10;
+        } else if (target.status == "Cukup") {
+          description =
+          "Perbanyak latihan dzikir agar menjadi kebiasaan.";
+          reason =
+          "Kemampuan dzikir sudah berkembang dan perlu diperkuat.";
+          estimatedMinutes = 8;
+        } else if (target.status == "Lancar") {
+          description =
+          "Biasakan membaca dzikir setiap hari.";
+          reason =
+          "Dzikir sudah lancar dan perlu dijaga konsistensinya.";
+          estimatedMinutes = 5;
+        } else {
+          description =
+          "Pertahankan kebiasaan dzikir harian.";
+          reason =
+          "Dzikir sudah menjadi kebiasaan yang baik.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.favorite;
         color = Colors.red;
         break;
 
       case "Doa":
-        description =
-        "Pelajari dan amalkan doa harian.";
-        reason =
-        "Doa harian dipilih agar menjadi kebiasaan dalam setiap aktivitas.";
-        estimatedMinutes = 10;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai menghafal doa harian sesuai aktivitas anak.";
+          reason =
+          "Anak baru mulai mengenal doa harian.";
+          estimatedMinutes = 10;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi doa hingga lebih lancar.";
+          reason =
+          "Engine mendeteksi hafalan doa masih perlu pengulangan.";
+          estimatedMinutes = 10;
+        } else if (target.status == "Cukup") {
+          description =
+          "Latih membaca doa tanpa bantuan.";
+          reason =
+          "Doa sudah mulai diingat dan perlu diperkuat.";
+          estimatedMinutes = 8;
+        } else if (target.status == "Lancar") {
+          description =
+          "Biasakan membaca doa pada waktu yang tepat.";
+          reason =
+          "Doa sudah lancar dan perlu diamalkan setiap hari.";
+          estimatedMinutes = 5;
+        } else {
+          description =
+          "Pertahankan kebiasaan membaca doa harian.";
+          reason =
+          "Doa telah menjadi kebiasaan yang baik.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.volunteer_activism;
         color = Colors.orange;
         break;
 
       case "Hadits":
-        description =
-        "Pelajari satu hadits pendek beserta maknanya.";
-        reason =
-        "Hadits dipilih untuk mengenalkan sunnah Rasulullah ﷺ sesuai usia anak.";
-        estimatedMinutes = 15;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai mempelajari satu hadits pendek beserta maknanya.";
+          reason =
+          "Anak baru mulai mengenal hadits.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi hadits hingga hafal dan memahami maknanya.";
+          reason =
+          "Engine mendeteksi hadits masih perlu pengulangan.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Perkuat hafalan hadits dan mulai mengamalkannya.";
+          reason =
+          "Hadits sudah berkembang dan perlu diperdalam.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Murajaah hadits agar tetap terjaga.";
+          reason =
+          "Hadits sudah lancar dan perlu dijaga.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Lanjutkan ke hadits berikutnya.";
+          reason =
+          "Hadits sebelumnya sudah mutqin.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.library_books;
         color = Colors.indigo;
         break;
 
       case "Bahasa Arab":
-        description =
-        "Tambahkan kosakata Bahasa Arab hari ini.";
-        reason =
-        "Bahasa Arab membantu anak memahami Al-Qur'an dan ilmu syar'i secara bertahap.";
-        estimatedMinutes = 15;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai mengenal kosakata Bahasa Arab dasar.";
+          reason =
+          "Anak baru mulai belajar Bahasa Arab.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi kosakata yang sudah dipelajari.";
+          reason =
+          "Kosakata masih perlu diperkuat.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Tambahkan kosakata baru sambil mengulang yang lama.";
+          reason =
+          "Kemampuan Bahasa Arab mulai berkembang.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Gunakan kosakata dalam percakapan sederhana.";
+          reason =
+          "Kosakata sudah cukup dikuasai.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Lanjutkan ke materi Bahasa Arab berikutnya.";
+          reason =
+          "Materi sebelumnya sudah mutqin.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.translate;
         color = Colors.deepPurple;
         break;
 
       case "Berhitung":
-        description =
-        "Latih kemampuan berhitung sesuai usia anak.";
-        reason =
-        "Berhitung dipilih untuk mengembangkan kemampuan logika dan numerasi anak.";
-        estimatedMinutes = 15;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai mengenal konsep berhitung sesuai usia anak.";
+          reason =
+          "Anak baru mulai belajar berhitung.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi latihan berhitung dengan benda-benda di sekitar.";
+          reason =
+          "Kemampuan berhitung masih perlu penguatan.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Latih berhitung dengan variasi soal sederhana.";
+          reason =
+          "Kemampuan berhitung mulai berkembang.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Pertahankan kemampuan berhitung melalui permainan edukatif.";
+          reason =
+          "Kemampuan berhitung sudah baik.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Lanjutkan ke materi berhitung berikutnya.";
+          reason =
+          "Materi sebelumnya telah dikuasai.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.calculate;
         color = Colors.blue;
         break;
 
       case "Motorik Kasar":
-        description =
-        "Lakukan aktivitas fisik yang sesuai usia anak.";
-        reason =
-        "Motorik kasar penting untuk melatih keseimbangan, koordinasi, dan kekuatan tubuh anak.";
-        estimatedMinutes = 20;
+
+        if (target.status == "Belum Dipelajari") {
+          description =
+          "Mulai aktivitas motorik kasar sesuai usia anak.";
+          reason =
+          "Anak baru mulai melatih kemampuan motorik kasar.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Belum Lancar") {
+          description =
+          "Ulangi aktivitas fisik untuk meningkatkan koordinasi tubuh.";
+          reason =
+          "Koordinasi tubuh masih perlu dilatih.";
+          estimatedMinutes = 20;
+        } else if (target.status == "Cukup") {
+          description =
+          "Tambahkan variasi aktivitas fisik agar lebih percaya diri.";
+          reason =
+          "Motorik kasar mulai berkembang.";
+          estimatedMinutes = 15;
+        } else if (target.status == "Lancar") {
+          description =
+          "Pertahankan aktivitas fisik secara rutin.";
+          reason =
+          "Kemampuan motorik kasar sudah baik.";
+          estimatedMinutes = 10;
+        } else {
+          description =
+          "Lanjutkan dengan tantangan motorik yang lebih beragam.";
+          reason =
+          "Motorik kasar telah berkembang dengan baik.";
+          estimatedMinutes = 5;
+        }
+
         icon = Icons.directions_run;
         color = Colors.deepOrange;
         break;
@@ -381,6 +674,8 @@ class LearningEngine {
       icon: icon,
       color: color,
     );
+
+
   }
 
 
