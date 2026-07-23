@@ -2,35 +2,35 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._init();
+static final DatabaseHelper instance = DatabaseHelper._init();
 
-  DatabaseHelper._init();
+DatabaseHelper._init();
 
-  Database? _database;
+Database? _database;
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
+Future<Database> get database async {
+if (_database != null) return _database!;
 
-    _database = await _initDB('madinah_path.db');
+_database = await _initDB('madinah_path.db');
 
-    return _database!;
-  }
+return _database!;
+}
 
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
+Future<Database> _initDB(String filePath) async {
+final dbPath = await getDatabasesPath();
 
-    final path = join(dbPath, filePath);
+final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 12,
-      onCreate: _createDB,
-      onUpgrade: _onUpgrade,
-    );
-  }
+return await openDatabase(
+path,
+version: 13,
+onCreate: _createDB,
+onUpgrade: _onUpgrade,
+);
+}
 
-  Future<void> _createDB(Database db, int version) async {
-    await db.execute('''
+Future<void> _createDB(Database db, int version) async {
+await db.execute('''
       CREATE TABLE hafalan(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -40,7 +40,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE ibadah(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -56,7 +56,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE target_ibadah(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -71,7 +71,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE guardian(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         namaLengkap TEXT NOT NULL,
@@ -86,7 +86,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE child(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         guardianId INTEGER NOT NULL,
@@ -95,13 +95,14 @@ class DatabaseHelper {
         tanggalLahir TEXT NOT NULL,
         jenisKelamin TEXT NOT NULL,
         foto TEXT,
+        lastLearningDate TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         FOREIGN KEY (guardianId) REFERENCES guardian(id)
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE education(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -115,7 +116,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE reward(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -127,7 +128,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE achievement(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -139,7 +140,7 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
+await db.execute('''
       CREATE TABLE target(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         childId INTEGER NOT NULL,
@@ -153,15 +154,15 @@ class DatabaseHelper {
         FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
-  }
 
-  Future<void> _onUpgrade(
-      Database db,
-      int oldVersion,
-      int newVersion,
-      ) async {
-    if (oldVersion < 2) {
-      await db.execute('''
+}
+Future<void> _onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+    ) async {
+  if (oldVersion < 2) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS ibadah(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           tanggal TEXT NOT NULL,
@@ -174,10 +175,10 @@ class DatabaseHelper {
           dzikir INTEGER NOT NULL
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 3) {
-      await db.execute('''
+  if (oldVersion < 3) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS target_ibadah(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           subuh INTEGER NOT NULL,
@@ -189,10 +190,10 @@ class DatabaseHelper {
           dzikir INTEGER NOT NULL
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 4) {
-      await db.execute('''
+  if (oldVersion < 4) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS guardian(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           namaLengkap TEXT NOT NULL,
@@ -206,10 +207,10 @@ class DatabaseHelper {
           updatedAt TEXT NOT NULL
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 5) {
-      await db.execute('''
+  if (oldVersion < 5) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS child(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           guardianId INTEGER NOT NULL,
@@ -218,34 +219,35 @@ class DatabaseHelper {
           tanggalLahir TEXT NOT NULL,
           jenisKelamin TEXT NOT NULL,
           foto TEXT,
+          lastLearningDate TEXT,
           createdAt TEXT NOT NULL,
           updatedAt TEXT NOT NULL,
           FOREIGN KEY (guardianId) REFERENCES guardian(id)
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 6) {
-      await db.execute('''
+  if (oldVersion < 6) {
+    await db.execute('''
         ALTER TABLE hafalan
         ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
       ''');
-    }
+  }
 
-    if (oldVersion < 7) {
-      await db.execute('''
+  if (oldVersion < 7) {
+    await db.execute('''
         ALTER TABLE ibadah
         ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
       ''');
 
-      await db.execute('''
+    await db.execute('''
         ALTER TABLE target_ibadah
         ADD COLUMN childId INTEGER NOT NULL DEFAULT 1
       ''');
-    }
+  }
 
-    if (oldVersion < 8) {
-      await db.execute('''
+  if (oldVersion < 8) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS education(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           childId INTEGER NOT NULL,
@@ -258,10 +260,10 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 9) {
-      await db.execute('''
+  if (oldVersion < 9) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS reward(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           childId INTEGER NOT NULL,
@@ -272,10 +274,10 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 10) {
-      await db.execute('''
+  if (oldVersion < 10) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS achievement(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           childId INTEGER NOT NULL,
@@ -286,10 +288,10 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
-    }
+  }
 
-    if (oldVersion < 11) {
-      await db.execute('''
+  if (oldVersion < 11) {
+    await db.execute('''
         CREATE TABLE IF NOT EXISTS target(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           childId INTEGER NOT NULL,
@@ -302,13 +304,20 @@ class DatabaseHelper {
           FOREIGN KEY (childId) REFERENCES child(id)
         )
       ''');
-    }
-
-    if (oldVersion < 12) {
-      await db.execute('''
-    ALTER TABLE target
-    ADD COLUMN status TEXT NOT NULL DEFAULT 'Belum Dipelajari'
-  ''');
-    }
   }
+
+  if (oldVersion < 12) {
+    await db.execute('''
+        ALTER TABLE target
+        ADD COLUMN status TEXT NOT NULL DEFAULT 'Belum Dipelajari'
+      ''');
+  }
+
+  if (oldVersion < 13) {
+    await db.execute('''
+        ALTER TABLE child
+        ADD COLUMN lastLearningDate TEXT
+      ''');
+  }
+}
 }

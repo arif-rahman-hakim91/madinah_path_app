@@ -78,10 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    loadGuardian();
-    loadProgress();
-    loadTargetSummary();
-    loadTodayTargets();
+    refreshDashboard();
   }
 
   Future<void> loadTargetSummary() async {
@@ -138,6 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> refreshDashboard() async {
+    await loadGuardian();
+    await loadProgress();
+    await loadTargetSummary();
+    await loadTodayTargets();
+  }
+
   Future<void> evaluateTarget(
       Target target,
       String status,
@@ -147,15 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
       status: status,
     );
 
-    await loadTargetSummary();
-    await loadTodayTargets();
-    await loadProgress();
+    await refreshDashboard();
 
     if (!mounted) return;
 
     Navigator.pop(context);
-
-    setState(() {});
   }
 
   Future<void> loadProgress() async {
@@ -194,14 +194,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (result == true) {
-      await loadProgress();
-      await loadGuardian();
-      await loadTargetSummary();
-      await loadTodayTargets();
-
+      await refreshDashboard();
       if (!mounted) return;
 
-      setState(() {});
     }
 
   }
@@ -358,12 +353,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
 
                     if (result == true) {
-                      await loadTargetSummary();
-                      await loadTodayTargets();
-
+                      await refreshDashboard();
                       if (!mounted) return;
 
-                      setState(() {});
                     }
                   },
 
@@ -446,12 +438,10 @@ class _HomeScreenState extends State<HomeScreen> {
               );
 
               if (result == true) {
-                await loadTargetSummary();
-                await loadTodayTargets();
+                await refreshDashboard();
 
                 if (!mounted) return;
 
-                setState(() {});
               }
             },
           ),
@@ -481,12 +471,10 @@ class _HomeScreenState extends State<HomeScreen> {
               );
 
               if (result == true) {
-                await loadGuardian();
-                await loadProgress();
+                await refreshDashboard();
 
                 if (!mounted) return;
 
-                setState(() {});
               }
             },
           ),

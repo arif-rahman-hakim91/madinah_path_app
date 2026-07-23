@@ -4,6 +4,7 @@ class Child {
   final int guardianId;
 
   final String namaLengkap;
+
   final String namaPanggilan;
 
   final DateTime tanggalLahir;
@@ -12,7 +13,10 @@ class Child {
 
   final String? foto;
 
+  final DateTime? lastLearningDate;
+
   final DateTime createdAt;
+
   final DateTime updatedAt;
 
   const Child({
@@ -23,6 +27,7 @@ class Child {
     required this.tanggalLahir,
     required this.jenisKelamin,
     this.foto,
+    this.lastLearningDate,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -36,6 +41,8 @@ class Child {
       'tanggalLahir': tanggalLahir.toIso8601String(),
       'jenisKelamin': jenisKelamin,
       'foto': foto,
+      'lastLearningDate':
+      lastLearningDate?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -49,6 +56,7 @@ class Child {
     DateTime? tanggalLahir,
     String? jenisKelamin,
     String? foto,
+    DateTime? lastLearningDate,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -56,26 +64,45 @@ class Child {
       id: id ?? this.id,
       guardianId: guardianId ?? this.guardianId,
       namaLengkap: namaLengkap ?? this.namaLengkap,
-      namaPanggilan: namaPanggilan ?? this.namaPanggilan,
-      tanggalLahir: tanggalLahir ?? this.tanggalLahir,
-      jenisKelamin: jenisKelamin ?? this.jenisKelamin,
+      namaPanggilan:
+      namaPanggilan ?? this.namaPanggilan,
+      tanggalLahir:
+      tanggalLahir ?? this.tanggalLahir,
+      jenisKelamin:
+      jenisKelamin ?? this.jenisKelamin,
       foto: foto ?? this.foto,
+      lastLearningDate:
+      lastLearningDate ??
+          this.lastLearningDate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-
-  factory Child.fromMap(Map<String, dynamic> map) {
+  factory Child.fromMap(
+      Map<String, dynamic> map,
+      ) {
     return Child(
       id: map['id'],
       guardianId: map['guardianId'],
       namaLengkap: map['namaLengkap'],
       namaPanggilan: map['namaPanggilan'],
-      tanggalLahir: DateTime.parse(map['tanggalLahir']),
+      tanggalLahir: DateTime.parse(
+        map['tanggalLahir'],
+      ),
       jenisKelamin: map['jenisKelamin'],
       foto: map['foto'],
-      createdAt: DateTime.parse(map['createdAt']),
-      updatedAt: DateTime.parse(map['updatedAt']),
+      lastLearningDate:
+      map['lastLearningDate'] != null
+          ? DateTime.parse(
+        map['lastLearningDate'],
+      )
+          : null,
+      createdAt: DateTime.parse(
+        map['createdAt'],
+      ),
+      updatedAt: DateTime.parse(
+        map['updatedAt'],
+      ),
     );
   }
 }

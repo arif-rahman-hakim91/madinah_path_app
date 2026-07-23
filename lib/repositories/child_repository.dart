@@ -66,4 +66,52 @@ class ChildRepository {
       whereArgs: [id],
     );
   }
+  Future<void> updateLastLearningDate(
+      int childId,
+      DateTime date,
+      ) async {
+    final db = await dbHelper.database;
+
+    await db.update(
+      'child',
+      {
+        'lastLearningDate':
+        date.toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [childId],
+    );
+  }
+
+  Future<DateTime?> getLastLearningDate(
+      int childId,
+      ) async {
+    final db = await dbHelper.database;
+
+    final result = await db.query(
+      'child',
+      columns: [
+        'lastLearningDate',
+      ],
+      where: 'id = ?',
+      whereArgs: [childId],
+      limit: 1,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    final value =
+    result.first['lastLearningDate'];
+
+    if (value == null) {
+      return null;
+    }
+
+    return DateTime.parse(
+      value.toString(),
+    );
+  }
+
 }
