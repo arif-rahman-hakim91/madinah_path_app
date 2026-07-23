@@ -33,16 +33,22 @@ class LearningEngine {
   Future<List<Target>> getTodayTargets(
       Child child,
       ) async {
-    final targets = await targetRepository.getPendingToday(
-      child.id!,
+    final targets = await targetRepository.getByDate(
+      childId: child.id!,
+      date: DateTime.now(),
     );
 
     targets.sort(
           (a, b) {
-            final aPriority =
-                PriorityEngine.priority[a.kategori] ?? 999;
-            final bPriority =
-                PriorityEngine.priority[b.kategori] ?? 999;
+        if (a.isCompleted != b.isCompleted) {
+          return a.isCompleted ? 1 : -1;
+        }
+
+        final aPriority =
+            PriorityEngine.priority[a.kategori] ?? 999;
+
+        final bPriority =
+            PriorityEngine.priority[b.kategori] ?? 999;
 
         return aPriority.compareTo(bPriority);
       },
@@ -617,34 +623,6 @@ class LearningEngine {
     );
 
 
-  }
-
-  List<Target> generateLearningFlow(
-      List<Target> targets,
-      ) {
-    final result = [...targets];
-
-    result.sort((a, b) {
-      final aPriority =
-          PriorityEngine.priority[a.kategori] ?? 999;
-
-      final bPriority =
-          PriorityEngine.priority[b.kategori] ?? 999;
-
-      if (aPriority != bPriority) {
-        return aPriority.compareTo(bPriority);
-      }
-
-      final aStatus =
-          StatusPriority.priority[a.status] ?? 999;
-
-      final bStatus =
-          StatusPriority.priority[b.status] ?? 999;
-
-      return aStatus.compareTo(bStatus);
-    });
-
-    return result;
   }
 
 }

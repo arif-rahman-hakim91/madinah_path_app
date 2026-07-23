@@ -5,11 +5,13 @@ import '../models/target.dart';
 class TargetListCard extends StatelessWidget {
   final List<Target> learningFlow;
   final Function(Target) onTap;
+  final VoidCallback onAddTarget;
 
   const TargetListCard({
     super.key,
     required this.learningFlow,
     required this.onTap,
+    required this.onAddTarget,
   });
 
   @override
@@ -130,27 +132,56 @@ class TargetListCard extends StatelessWidget {
                 ),
               ),
 
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  target.status,
-                  style: TextStyle(
-                    color: statusColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(
+                        alpha: 0.12,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      target.status,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
-                ),
+
+                  const SizedBox(width: 8),
+
+                  const Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey,
+                  ),
+                ],
               ),
             ),
           );
         }),
+
+        const SizedBox(height: 8),
+
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: onAddTarget,
+            icon: const Icon(Icons.add),
+            label: const Text(
+              "Tambah Target",
+            ),
+          ),
+        ),
       ],
     );
   }

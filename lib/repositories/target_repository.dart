@@ -59,6 +59,19 @@ class TargetRepository {
     );
   }
 
+  Future<void> evaluateTarget({
+    required Target target,
+    required String status,
+  }) async {
+    final updatedTarget = target.copyWith(
+      status: status,
+      isCompleted: true,
+      updatedAt: DateTime.now(),
+    );
+
+    await update(updatedTarget);
+  }
+
   Future<void> delete(int id) async {
     final db = await dbHelper.database;
 

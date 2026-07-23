@@ -12,6 +12,8 @@ import '../repositories/target_repository.dart';
 import '../services/current_child_service.dart';
 import '../services/dashboard_service.dart';
 import '../services/learning_engine.dart';
+import '../services/learning_flow_service.dart';
+import '../services/smart_resume_service.dart';
 
 // Widgets
 import '../widgets/active_child_card.dart';
@@ -24,6 +26,7 @@ import '../widgets/summary_card.dart';
 import '../widgets/target_list_card.dart';
 import '../widgets/target_today_card.dart';
 import '../widgets/weekly_consistency_card.dart';
+import '../widgets/smart_resume_card.dart';
 
 // Screens
 import 'child_selector_screen.dart';
@@ -47,10 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final guardianRepository = GuardianRepository();
   final targetRepository = TargetRepository();
   final LearningEngine learningEngine = LearningEngine();
+  final LearningFlowService learningFlowService =
+  LearningFlowService();
+  final SmartResumeService smartResumeService =
+  SmartResumeService();
 
   List<Target> learningFlow = [];
   String learningMessage = "";
   LearningRecommendation? recommendation;
+  String smartResume = "";
 
   Guardian? guardian;
 
@@ -98,24 +106,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (child == null) return;
 
-    final result = await learningEngine.getTodayTargets(
+    final result =
+    await learningEngine.getTodayTargets(
       child,
     );
 
-    if (!mounted) return;
+    final flow =
+    learningFlowService.generateFlow(
+      result,
+    );
 
     setState(() {
       todayTargets = result;
 
-      learningFlow =
-          learningEngine.generateLearningFlow(result);
+      learningFlow = flow;
 
       learningMessage =
-          learningEngine.getGreetingMessage(result);
+          learningEngine.getGreetingMessage(
+            flow,
+          );
 
       recommendation =
-          learningEngine.generateRecommendation(result);
+          learningEngine.generateRecommendation(
+            flow,
+          );
+      smartResume =
+          smartResumeService.generateSummary(
+            result,
+          );
+
     });
+  }
+
+  Future<void> evaluateTarget(
+      Target target,
+      String status,
+      ) async {
+    await targetRepository.evaluateTarget(
+      target: target,
+      status: status,
+    );
+
+    await loadTargetSummary();
+    await loadTodayTargets();
+    await loadProgress();
+
+    if (!mounted) return;
+
+    Navigator.pop(context);
+
+    setState(() {});
   }
 
   Future<void> loadProgress() async {
@@ -257,8 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.refresh,
                                 title: "Belum Lancar",
                                 color: Colors.orange,
-                                onTap: () async {
-                                  await updateTargetStatus(
+                                onTap: () {
+                                  evaluateTarget(
                                     target,
                                     "Belum Lancar",
                                   );
@@ -269,8 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.trending_up,
                                 title: "Cukup",
                                 color: Colors.blue,
-                                onTap: () async {
-                                  await updateTargetStatus(
+                                onTap: () {
+                                  evaluateTarget(
                                     target,
                                     "Cukup",
                                   );
@@ -281,8 +321,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.check_circle,
                                 title: "Lancar",
                                 color: Colors.green,
-                                onTap: () async {
-                                  await updateTargetStatus(
+                                onTap: () {
+                                  evaluateTarget(
                                     target,
                                     "Lancar",
                                   );
@@ -293,12 +333,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.workspace_premium,
                                 title: "Mutqin",
                                 color: Colors.purple,
-                                onTap: () async {
-                                  await updateTargetStatus(
-                                    target,
-                                    "Mutqin",
-                                  );
-                                },
+                                  onTap: () {
+                                    evaluateTarget(
+                                      target,
+                                      "Mutqin",
+                                    );
+                                  },
                               ),
 
                               const SizedBox(height: 20),
@@ -308,6 +348,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     );
                   },
+
+                  onAddTarget: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const TargetScreen(),
+                      ),
+                    );
+
+                    if (result == true) {
+                      await loadTargetSummary();
+                      await loadTodayTargets();
+
+                      if (!mounted) return;
+
+                      setState(() {});
+                    }
+                  },
+
                 ),
 
                 const SizedBox(height: 20,),
@@ -340,6 +399,14 @@ class _HomeScreenState extends State<HomeScreen> {
             strength: strength,
             improvement: improvement,
           ),
+
+          const SizedBox(height: 20),
+
+          SmartResumeCard(
+            summary: smartResume,
+          ),
+
+          const SizedBox(height: 20),
 
           SizedBox(
             width: double.infinity,
@@ -456,30 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> updateTargetStatus(
-      Target target,
-      String status,
-      ) async {
-    final updated = target.copyWith(
-      status: status,
-      isCompleted: status == "Mutqin",
-      updatedAt: DateTime.now(),
-    );
 
-    await targetRepository.update(updated);
-
-    if (!mounted) return;
-
-    Navigator.pop(context);
-
-    await Future.wait([
-      loadTargetSummary(),
-      loadTodayTargets(),
-      loadProgress(),
-    ]);
-
-    setState(() {});
-  }
 
   Widget _evaluationButton({
   required IconData icon,
