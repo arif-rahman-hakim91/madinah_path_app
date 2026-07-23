@@ -212,4 +212,58 @@ class TargetRepository {
         .map((e) => Target.fromMap(e))
         .toList();
   }
+
+  Future<List<Target>> getCompletedToday(
+      int childId,
+      ) async {
+    final db = await dbHelper.database;
+
+    final now = DateTime.now();
+
+    final start = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final end = start.add(
+      const Duration(days: 1),
+    );
+
+    final result = await db.query(
+      'target',
+      where: '''
+      childId = ?
+      AND isCompleted = 1
+      AND targetDate >= ?
+      AND targetDate < ?
+    ''',
+      whereArgs: [
+        childId,
+        start.toIso8601String(),
+        end.toIso8601String(),
+      ],
+    );
+
+    return result
+        .map(Target.fromMap)
+        .toList();
+  }
+
+  Future<List<Target>> getAllByChild(
+      int childId,
+      ) async {
+    final db = await dbHelper.database;
+
+    final result = await db.query(
+      'target',
+      where: 'childId = ?',
+      whereArgs: [childId],
+      orderBy: 'targetDate ASC',
+    );
+
+    return result
+        .map(Target.fromMap)
+        .toList();
+  }
 }

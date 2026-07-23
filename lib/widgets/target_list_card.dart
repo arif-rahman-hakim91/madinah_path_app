@@ -27,7 +27,7 @@ class TargetListCard extends StatelessWidget {
           children: [
 
             Icon(
-              Icons.auto_awesome,
+              Icons.workspace_premium,
               color: Colors.green,
               size: 22,
             ),
