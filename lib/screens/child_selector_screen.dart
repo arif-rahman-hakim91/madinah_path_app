@@ -4,6 +4,7 @@ import '../models/child.dart';
 import '../repositories/child_repository.dart';
 import '../services/current_child_service.dart';
 import 'add_child_screen.dart';
+import '../services/daily_cycle_service.dart';
 
 class ChildSelectorScreen extends StatefulWidget {
   const ChildSelectorScreen({super.key});
@@ -134,9 +135,15 @@ class _ChildSelectorScreenState extends State<ChildSelectorScreen> {
             onTap: () {
               CurrentChildService.setCurrentChild(child);
 
-              if (!mounted) return;
+              final navigator = Navigator.of(context);
 
-              Navigator.pop(context, true);
+              DailyCycleService().run(child).then((_) {
+                if (!mounted) {
+                  return;
+                }
+
+                navigator.pop(true);
+              });
             },
           );
         },

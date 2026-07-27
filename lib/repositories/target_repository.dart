@@ -59,13 +59,12 @@ class TargetRepository {
     );
   }
 
-  Future<void> evaluateTarget({
+  Future<void> updateStatus({
     required Target target,
     required String status,
   }) async {
     final updatedTarget = target.copyWith(
       status: status,
-      isCompleted: true,
       updatedAt: DateTime.now(),
     );
 

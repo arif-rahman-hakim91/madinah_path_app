@@ -23,7 +23,7 @@ final path = join(dbPath, filePath);
 
 return await openDatabase(
 path,
-version: 13,
+version: 14,
 onCreate: _createDB,
 onUpgrade: _onUpgrade,
 );
@@ -154,6 +154,19 @@ await db.execute('''
         FOREIGN KEY (childId) REFERENCES child(id)
       )
     ''');
+await db.execute('''
+  CREATE TABLE daily_target(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    childId INTEGER NOT NULL,
+    targetId INTEGER NOT NULL,
+    tanggal TEXT NOT NULL,
+    isCompleted INTEGER NOT NULL DEFAULT 0,
+    completedAt TEXT,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (childId) REFERENCES child(id),
+    FOREIGN KEY (targetId) REFERENCES target(id)
+  )
+''');
 
 }
 Future<void> _onUpgrade(
@@ -318,6 +331,22 @@ Future<void> _onUpgrade(
         ALTER TABLE child
         ADD COLUMN lastLearningDate TEXT
       ''');
+  }
+
+  if (oldVersion < 14) {
+    await db.execute('''
+    CREATE TABLE IF NOT EXISTS daily_target(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      childId INTEGER NOT NULL,
+      targetId INTEGER NOT NULL,
+      tanggal TEXT NOT NULL,
+      isCompleted INTEGER NOT NULL DEFAULT 0,
+      completedAt TEXT,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (childId) REFERENCES child(id),
+      FOREIGN KEY (targetId) REFERENCES target(id)
+    )
+  ''');
   }
 }
 }

@@ -1,3 +1,16 @@
+import 'daily_target.dart';
+
+class TodayTarget {
+  final Target target;
+
+  final DailyTarget dailyTarget;
+
+  const TodayTarget({
+    required this.target,
+    required this.dailyTarget,
+  });
+}
+
 class Target {
   final int? id;
 

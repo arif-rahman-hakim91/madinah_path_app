@@ -3,14 +3,16 @@ import '../repositories/reward_repository.dart';
 import 'current_child_service.dart';
 
 class RewardService {
-  final repository = RewardRepository();
+  final RewardRepository repository =
+  RewardRepository();
 
-  Future<void> givePoint({
+  Future<void> addPoint({
     required int point,
     required String title,
     required String description,
   }) async {
-    final child = CurrentChildService.currentChild;
+    final child =
+        CurrentChildService.currentChild;
 
     if (child == null) {
       return;
@@ -27,13 +29,29 @@ class RewardService {
     );
   }
 
+  Future<List<Reward>> getAll() async {
+    final child =
+        CurrentChildService.currentChild;
+
+    if (child == null) {
+      return [];
+    }
+
+    return repository.getAll(
+      child.id!,
+    );
+  }
+
   Future<int> getTotalPoint() async {
-    final child = CurrentChildService.currentChild;
+    final child =
+        CurrentChildService.currentChild;
 
     if (child == null) {
       return 0;
     }
 
-    return repository.getTotalPoint(child.id!);
+    return repository.getTotalPoint(
+      child.id!,
+    );
   }
 }

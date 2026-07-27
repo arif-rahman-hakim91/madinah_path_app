@@ -4,6 +4,8 @@ import '../repositories/target_repository.dart';
 import 'package:flutter/material.dart';
 import 'priority_engine.dart';
 import 'status_priority.dart';
+import '../repositories/daily_target_repository.dart';
+
 
 class LearningRecommendation {
   final String title;
@@ -27,16 +29,37 @@ class LearningRecommendation {
 }
 
 class LearningEngine {
-  final TargetRepository targetRepository = TargetRepository();
+  final TargetRepository targetRepository =
+  TargetRepository();
+  final DailyTargetRepository dailyTargetRepository =
+  DailyTargetRepository();
+
 
 
   Future<List<Target>> getTodayTargets(
       Child child,
       ) async {
-    final targets = await targetRepository.getByDate(
-      childId: child.id!,
-      date: DateTime.now(),
+    final dailyTargets =
+    await dailyTargetRepository.getTodayTargets(
+      child.id!,
     );
+
+    final targets = <Target>[];
+
+    for (final daily in dailyTargets) {
+      final target =
+      await targetRepository.getById(
+        daily.targetId,
+      );
+
+      if (target != null) {
+        targets.add(
+          target.copyWith(
+            isCompleted: daily.isCompleted,
+          ),
+        );
+      }
+    }
 
     targets.sort(
           (a, b) {
@@ -50,7 +73,9 @@ class LearningEngine {
         final bPriority =
             PriorityEngine.priority[b.kategori] ?? 999;
 
-        return aPriority.compareTo(bPriority);
+        return aPriority.compareTo(
+          bPriority,
+        );
       },
     );
 

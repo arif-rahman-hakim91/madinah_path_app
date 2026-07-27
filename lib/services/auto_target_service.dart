@@ -1,9 +1,14 @@
 import '../models/child.dart';
 import '../models/target.dart';
+import '../models/daily_target.dart';
+//ropository
 import '../repositories/target_repository.dart';
+import '../repositories/daily_target_repository.dart';
 
 class AutoTargetService {
   final TargetRepository repository = TargetRepository();
+  final DailyTargetRepository dailyRepository =
+  DailyTargetRepository();
 
   static const Map<String, int> priority = {
     "Murajaah": 1,
@@ -71,19 +76,22 @@ class AutoTargetService {
 // Menghapus target yang sudah selesai hari ini.
   List<Target> removeCompletedToday(
       List<Target> targets,
-      List<Target> completedToday,
+      List<DailyTarget> completedToday,
       ) {
     final completedIds = completedToday
-        .map((e) => e.id)
+        .map(
+          (e) => e.targetId,
+    )
         .toSet();
 
     return targets.where(
           (target) {
-        return !completedIds.contains(target.id);
+        return !completedIds.contains(
+          target.id,
+        );
       },
     ).toList();
   }
-
 // Mengutamakan target Al-Qur'an.
 
 // Menyeimbangkan target Qur'an, Ibadah, dan kategori lain.
@@ -203,7 +211,7 @@ class AutoTargetService {
 // List<Target>
 // ======================================================
 
-  Future<List<Target>> generateTodayTargets(
+  Future<List<DailyTarget>> generateTodayTargets(
       Child child,
       ) async {
     final targets = await repository.getAllByChild(
@@ -215,7 +223,7 @@ class AutoTargetService {
     );
 
     final completedToday =
-    await repository.getCompletedToday(
+    await dailyRepository.getTodayTargets(
       child.id!,
     );
 
@@ -244,6 +252,21 @@ class AutoTargetService {
       diversifiedTargets,
     );
 
-    return todayTargets;
+    final now = DateTime.now();
+
+    final dailyTargets = todayTargets.map(
+          (target) {
+        return DailyTarget(
+          childId: child.id!,
+          targetId: target.id!,
+          tanggal: now,
+          isCompleted: false,
+          completedAt: null,
+          createdAt: now,
+        );
+      },
+    ).toList();
+
+    return dailyTargets;
   }
 }

@@ -17,8 +17,8 @@ class AchievementService {
     }
 
     final alreadyUnlocked = await repository.exists(
-      child.id!,
-      title,
+      childId: child.id!,
+      title: title,
     );
 
     if (alreadyUnlocked) {

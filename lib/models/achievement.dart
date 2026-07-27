@@ -1,8 +1,10 @@
 class Achievement {
   final int? id;
+
   final int childId;
 
   final String title;
+
   final String description;
 
   final String icon;
@@ -18,25 +20,47 @@ class Achievement {
     required this.unlockedAt,
   });
 
+  Achievement copyWith({
+    int? id,
+    int? childId,
+    String? title,
+    String? description,
+    String? icon,
+    DateTime? unlockedAt,
+  }) {
+    return Achievement(
+      id: id ?? this.id,
+      childId: childId ?? this.childId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      icon: icon ?? this.icon,
+      unlockedAt: unlockedAt ?? this.unlockedAt,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'childId': childId,
-      'title': title,
-      'description': description,
-      'icon': icon,
-      'unlockedAt': unlockedAt.toIso8601String(),
+      "id": id,
+      "childId": childId,
+      "title": title,
+      "description": description,
+      "icon": icon,
+      "unlockedAt": unlockedAt.toIso8601String(),
     };
   }
 
-  factory Achievement.fromMap(Map<String, dynamic> map) {
+  factory Achievement.fromMap(
+      Map<String, dynamic> map,
+      ) {
     return Achievement(
-      id: map['id'],
-      childId: map['childId'],
-      title: map['title'],
-      description: map['description'],
-      icon: map['icon'],
-      unlockedAt: DateTime.parse(map['unlockedAt']),
+      id: map["id"],
+      childId: map["childId"],
+      title: map["title"],
+      description: map["description"],
+      icon: map["icon"],
+      unlockedAt: DateTime.parse(
+        map["unlockedAt"],
+      ),
     );
   }
 }

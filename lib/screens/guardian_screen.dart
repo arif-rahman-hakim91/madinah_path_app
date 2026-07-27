@@ -27,7 +27,7 @@ class _GuardianScreenState extends State<GuardianScreen> {
 
   File? selectedImage;
 
-  String jenisKelamin = "Umma";
+  String jenisKelamin = "Ummi";
 
   @override
   void initState() {

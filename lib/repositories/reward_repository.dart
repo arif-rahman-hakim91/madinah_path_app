@@ -6,17 +6,22 @@ import '../models/reward.dart';
 class RewardRepository {
   final dbHelper = DatabaseHelper.instance;
 
-  Future<void> add(Reward reward) async {
+  Future<void> add(
+      Reward reward,
+      ) async {
     final db = await dbHelper.database;
 
     await db.insert(
       'reward',
       reward.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm:
+      ConflictAlgorithm.replace,
     );
   }
 
-  Future<List<Reward>> getAll(int childId) async {
+  Future<List<Reward>> getAll(
+      int childId,
+      ) async {
     final db = await dbHelper.database;
 
     final result = await db.query(
@@ -27,49 +32,13 @@ class RewardRepository {
     );
 
     return result
-        .map((map) => Reward.fromMap(map))
+        .map(Reward.fromMap)
         .toList();
   }
 
-  Future<Reward?> getById(int id) async {
-    final db = await dbHelper.database;
-
-    final result = await db.query(
-      'reward',
-      where: 'id = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
-
-    if (result.isEmpty) {
-      return null;
-    }
-
-    return Reward.fromMap(result.first);
-  }
-
-  Future<void> update(Reward reward) async {
-    final db = await dbHelper.database;
-
-    await db.update(
-      'reward',
-      reward.toMap(),
-      where: 'id = ?',
-      whereArgs: [reward.id],
-    );
-  }
-
-  Future<void> delete(int id) async {
-    final db = await dbHelper.database;
-
-    await db.delete(
-      'reward',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  Future<int> getTotalPoint(int childId) async {
+  Future<int> getTotalPoint(
+      int childId,
+      ) async {
     final db = await dbHelper.database;
 
     final result = await db.rawQuery(
@@ -81,12 +50,9 @@ class RewardRepository {
       [childId],
     );
 
-    final total = result.first['total'];
-
-    if (total == null) {
-      return 0;
-    }
-
-    return total as int;
+    return Sqflite.firstIntValue(
+      result,
+    ) ??
+        0;
   }
 }
