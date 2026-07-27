@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_radius.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
+
 class TargetTodayCard extends StatelessWidget {
   final int totalTargetHariIni;
   final int targetSelesaiHariIni;
@@ -16,10 +21,10 @@ class TargetTodayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.card,
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.card,
+        borderRadius: AppRadius.mdRadius,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,7 +33,7 @@ class TargetTodayCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.today,
-                color: Colors.green,
+                color: AppColors.primary,
                 size: 28,
               ),
 
@@ -37,10 +42,7 @@ class TargetTodayCard extends StatelessWidget {
               const Expanded(
                 child: Text(
                   "Target Hari Ini",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyle.title,
                 ),
               ),
 
@@ -49,10 +51,7 @@ class TargetTodayCard extends StatelessWidget {
                 children: [
                   Text(
                     "$targetSelesaiHariIni/$totalTargetHariIni",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyle.subtitle,
                   ),
 
                   Text(
@@ -81,12 +80,12 @@ class TargetTodayCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
               valueColor: AlwaysStoppedAnimation<Color>(
                 totalTargetHariIni == 0
-                    ? Colors.grey
+                    ? AppColors.progressEmpty
                     : (targetSelesaiHariIni / totalTargetHariIni) >= 0.8
-                    ? Colors.green
+                    ? AppColors.progressHigh
                     : (targetSelesaiHariIni / totalTargetHariIni) >= 0.5
-                    ? Colors.orange
-                    : Colors.red,
+                    ? AppColors.progressMedium
+                    : AppColors.progressLow
               ),
             ),
           ),
@@ -97,9 +96,7 @@ class TargetTodayCard extends StatelessWidget {
             totalTargetHariIni == 0
                 ? "Belum ada target hari ini."
                 : "🎯 $totalTargetHariIni target belajar hari ini.",
-            style: const TextStyle(
-              color: Colors.grey,
-            ),
+            style: AppTextStyle.caption,
           ),
 
           if (learningMessage != null &&
@@ -108,8 +105,8 @@ class TargetTodayCard extends StatelessWidget {
 
             Text(
               learningMessage!,
-              style: TextStyle(
-                color: Colors.green.shade700,
+              style: AppTextStyle.body.copyWith(
+                color: AppColors.success,
                 fontWeight: FontWeight.w600,
               ),
             ),

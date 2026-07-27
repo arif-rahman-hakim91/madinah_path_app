@@ -40,6 +40,12 @@ import 'target_screen.dart';
 import 'history_screen.dart';
 import 'achievement_screen.dart';
 import 'reward_screen.dart';
+import 'statistics_screen.dart';
+
+//core
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -269,11 +275,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Madinah Path"),
+        title: const Text("Madinah Path",style: AppTextStyle.title),
         centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.page,
         children: [
           const SizedBox(height: 20),
 
@@ -291,8 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Card(
             child: Padding(
-              padding:
-              const EdgeInsets.all(16),
+              padding: AppSpacing.page,
               child: Column(
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
@@ -339,14 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   target.nama,
-                                  style:
-                                  const TextStyle(
-                                    fontSize:
-                                    22,
-                                    fontWeight:
-                                    FontWeight
-                                        .bold,
-                                  ),
+                                  style: AppTextStyle.headline,
                                 ),
 
                                 const SizedBox(
@@ -354,26 +352,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 Text(
                                   target.kategori,
-                                  style:
-                                  const TextStyle(
-                                    color:
-                                    Colors
-                                        .grey,
-                                  ),
+                                  style: AppTextStyle.caption,
                                 ),
-                                const SizedBox(
-                                    height: 24),
+                                AppSpacing.verticalLg,
 
                                 const Text(
                                   "Bagaimana hasil belajar hari ini?",
-                                  style:
-                                  TextStyle(
-                                    fontSize:
-                                    18,
-                                    fontWeight:
-                                    FontWeight
-                                        .bold,
-                                  ),
+                                  style: AppTextStyle.subtitle,
                                 ),
 
                                 const SizedBox(
@@ -612,6 +597,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           NavigationCard(
+            title: "Statistik",
+            description: "Lihat perkembangan belajar anak.",
+            buttonText: "Buka",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const StatisticsScreen(),
+                ),
+              );
+            },
+          ),
+
+          NavigationCard(
             title: "Profil Anak",
             description:
             "Lihat informasi anak dan pengaturan aplikasi.",
@@ -670,10 +669,14 @@ class _HomeScreenState extends State<HomeScreen> {
             color: color,
           ),
         ),
-        title: Text(title),
+        title: Text(
+          title,
+          style: AppTextStyle.body,
+        ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
           size: 16,
+          color: AppColors.textSecondary,
         ),
       ),
     );
