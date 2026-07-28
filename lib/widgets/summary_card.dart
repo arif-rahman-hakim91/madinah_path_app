@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+
+import '../core/theme/app_radius.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
+import '../core/theme/app_category_colors.dart';
+
 class SummaryCard extends StatelessWidget {
   final int targetSelesaiHariIni;
   final int totalTargetHariIni;
@@ -19,55 +25,50 @@ class SummaryCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.mdRadius,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               "Ringkasan Hari Ini",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyle.title,
             ),
 
-            const SizedBox(height: 20),
+            AppSpacing.verticalLg,
 
             const Text(
               "Ringkasan aktivitas belajar hari ini.",
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+              style: AppTextStyle.caption,
             ),
 
-            const SizedBox(height: 20),
+            AppSpacing.verticalLg,
 
             Row(
               children: [
                 _item(
                   Icons.flag,
-                  Colors.green,
+                  AppCategoryColors.target,
                   "$targetSelesaiHariIni/$totalTargetHariIni",
                   "Target",
                 ),
 
-                const SizedBox(width: 12),
+                AppSpacing.horizontalMd,
 
                 _item(
                   Icons.menu_book,
-                  Colors.blue,
+                  AppCategoryColors.hafalan,
                   "$hafalanCount",
                   "Hafalan",
                 ),
 
-                const SizedBox(width: 12),
+                AppSpacing.horizontalMd,
 
                 _item(
                   Icons.mosque,
-                  Colors.orange,
+                  AppCategoryColors.ibadah,
                   "$ibadahCount",
                   "Ibadah",
                 ),
@@ -94,17 +95,14 @@ class SummaryCard extends StatelessWidget {
             size: 32,
           ),
 
-          const SizedBox(height: 8),
+          AppSpacing.verticalSm,
 
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyle.headline,
           ),
 
-          const SizedBox(height: 4),
+          AppSpacing.verticalXs,
 
           Text(
             title,

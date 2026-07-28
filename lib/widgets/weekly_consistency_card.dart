@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_radius.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
+
 class WeeklyConsistencyCard extends StatelessWidget {
   final List<double> weeklyProgress;
 
@@ -13,26 +18,36 @@ class WeeklyConsistencyCard extends StatelessWidget {
       double value,
       ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(
+        bottom: AppSpacing.sm,
+      ),
       child: Row(
         children: [
           SizedBox(
             width: 40,
-            child: Text(day),
+            child: Text(
+              day,
+              style: AppTextStyle.body,
+            ),
           ),
 
-          const SizedBox(width: 10),
+          AppSpacing.horizontalSm,
 
           Expanded(
             child: LinearProgressIndicator(
+              color: AppColors.primary,
+              backgroundColor: AppColors.divider,
               value: value,
               minHeight: 10,
             ),
           ),
 
-          const SizedBox(width: 10),
+          AppSpacing.horizontalSm,
 
-          Text("${(value * 100).toInt()}%"),
+          Text(
+            "${(value * 100).toInt()}%",
+            style: AppTextStyle.body,
+          ),
         ],
       ),
     );
@@ -41,20 +56,20 @@ class WeeklyConsistencyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.mdRadius,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               "Konsistensi Mingguan",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyle.title,
             ),
 
-            const SizedBox(height: 20),
+            AppSpacing.verticalLg,
 
             _item(
               "Senin",

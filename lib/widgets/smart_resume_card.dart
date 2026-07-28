@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_radius.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
+
 class SmartResumeCard extends StatelessWidget {
   final String summary;
 
@@ -11,8 +16,11 @@ class SmartResumeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.mdRadius,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.card,
         child: Row(
           crossAxisAlignment:
           CrossAxisAlignment.start,
@@ -20,11 +28,11 @@ class SmartResumeCard extends StatelessWidget {
 
             const Icon(
               Icons.lightbulb,
-              color: Colors.amber,
+              color: AppColors.warning,
               size: 32,
             ),
 
-            const SizedBox(width: 12),
+            AppSpacing.horizontalMd,
 
             Expanded(
               child: Column(
@@ -34,18 +42,14 @@ class SmartResumeCard extends StatelessWidget {
 
                   const Text(
                     "Smart Resume",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight:
-                      FontWeight.bold,
-                    ),
+                    style: AppTextStyle.title,
                   ),
 
-                  const SizedBox(height: 12),
+                  AppSpacing.verticalMd,
 
                   Text(
                     summary,
-                    style: const TextStyle(
+                    style: AppTextStyle.body.copyWith(
                       height: 1.5,
                     ),
                   ),

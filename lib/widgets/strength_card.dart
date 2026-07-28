@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_category_colors.dart';
+import '../core/theme/app_radius.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
+
 class StrengthCard extends StatelessWidget {
   final String strength;
   final String improvement;
@@ -13,40 +18,37 @@ class StrengthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.mdRadius,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.card,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
             const Text(
               "Kelebihan & Perlu Ditingkatkan",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyle.title,
             ),
 
-            const SizedBox(height: 20),
+            AppSpacing.verticalLg,
 
             const Row(
               children: [
                 Icon(
                   Icons.thumb_up,
-                  color: Colors.green,
+                  color: AppCategoryColors.target,
                 ),
                 SizedBox(width: 10),
                 Text(
                   "Kelebihan",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyle.subtitle,
                 ),
               ],
             ),
 
-            const SizedBox(height: 15),
+            AppSpacing.verticalMd,
 
             Row(
               children: [
@@ -59,26 +61,26 @@ class StrengthCard extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 Expanded(
-                  child: Text(strength),
+                  child: Text(
+                    strength,
+                    style: AppTextStyle.body,
+                  ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 25),
+            AppSpacing.verticalLg,
 
             const Row(
               children: [
                 Icon(
                   Icons.warning_amber_rounded,
-                  color: Colors.orange,
+                  color: AppCategoryColors.ibadah,
                 ),
                 SizedBox(width: 10),
                 Text(
                   "Perlu Ditingkatkan",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyle.subtitle,
                 ),
               ],
             ),
@@ -93,10 +95,13 @@ class StrengthCard extends StatelessWidget {
                   size: 8,
                 ),
 
-                const SizedBox(width: 8),
+                AppSpacing.horizontalSm,
 
                 Expanded(
-                  child: Text(improvement),
+                  child: Text(
+                    improvement,
+                    style: AppTextStyle.body,
+                  ),
                 ),
               ],
             ),
