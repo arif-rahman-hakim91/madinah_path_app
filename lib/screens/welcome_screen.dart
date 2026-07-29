@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                       child: Container(
                         height: 3,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.gold,
                       ),
                     ),
 
@@ -62,7 +62,7 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                       child: Container(
                         height: 3,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.gold,
                       ),
                     ),
                   ],
@@ -81,7 +81,7 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                       child: Container(
                         height: 2,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.gold,
                       ),
                     ),
 
@@ -98,7 +98,7 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(
                       child: Container(
                         height: 2,
-                        color: const Color(0xFFD4AF37),
+                        color: AppColors.gold,
                       ),
                     ),
                   ],
@@ -132,7 +132,7 @@ class WelcomeScreen extends StatelessWidget {
                   height: 56,
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37), // Emas
+                    color: AppColors.gold, // Emas
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: ElevatedButton(
