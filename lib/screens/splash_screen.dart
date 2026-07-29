@@ -4,11 +4,47 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_style.dart';
 
-class SplashScreen extends StatelessWidget {
+import 'dart:async';
+import 'welcome_screen.dart';
+
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(
+      const Duration(seconds: 2),
+          () {
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 600),
+            pageBuilder: (_, animation, secondaryAnimation) =>
+            const WelcomeScreen(),
+            transitionsBuilder:
+                (_, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
 
