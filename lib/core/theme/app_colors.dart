@@ -44,4 +44,6 @@ class AppColors {
 
   static const Color progressEmpty =
   Color(0xFF9E9E9E);
+
+  static const Color gold = Color(0xFFD4AF37);
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
 import 'core/theme/app_theme.dart';
 
+
 void main() {
   runApp(const MadinahPathApp());
 }
@@ -15,6 +16,7 @@ class MadinahPathApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: const WelcomeScreen(),
+
     );
   }
 }
