@@ -8,13 +8,13 @@ void main() {
 }
 
 class MadinahPathApp extends StatelessWidget {
-  const MadinahPathApp ({super.key});
+  const MadinahPathApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.lightTheme,
       home: const SplashScreen(),
     );
   }

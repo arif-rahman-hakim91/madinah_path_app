@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme/app_radius.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_style.dart';
+import 'common/app_button.dart';
+import 'common/app_card.dart';
 
 class NavigationCard extends StatelessWidget {
   final String title;
@@ -20,41 +21,29 @@ class NavigationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: AppRadius.mdRadius,
-      ),
-      child: Padding(
-        padding: AppSpacing.card,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-                style: AppTextStyle.title,
-            ),
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyle.title,
+          ),
 
-            AppSpacing.verticalSm,
+          AppSpacing.verticalSm,
 
-            Text(
-              description,
-              style: AppTextStyle.body,
-            ),
+          Text(
+            description,
+            style: AppTextStyle.body,
+          ),
 
-            AppSpacing.verticalMd,
+          AppSpacing.verticalMd,
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onPressed,
-                child: Text(
-                  buttonText,
-                  style: AppTextStyle.button,
-                ),
-              ),
-            ),
-          ],
-        ),
+          AppButton(
+            label: buttonText,
+            onPressed: onPressed,
+          ),
+        ],
       ),
     );
   }

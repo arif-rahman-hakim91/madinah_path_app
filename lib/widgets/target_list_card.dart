@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_text_style.dart';
 import '../models/target.dart';
+import '../widgets/common/app_card.dart';
+import '../widgets/common/app_empty.dart';
+import '../widgets/common/app_section_title.dart';
 
 class TargetListCard extends StatelessWidget {
   final List<Target> learningFlow;
@@ -17,38 +23,36 @@ class TargetListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (learningFlow.isEmpty) {
-      return const SizedBox();
+      return AppCard(
+        child: AppEmpty(
+          icon: Icons.menu_book_outlined,
+          title: "Belum ada target hari ini",
+          message: "Silakan tambahkan target belajar terlebih dahulu.",
+          action: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: onAddTarget,
+              icon: const Icon(Icons.add),
+              label: const Text("Tambah Target"),
+            ),
+          ),
+        ),
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
+        AppSpacing.verticalLg,
 
-        const Row(
-          children: [
-
-            Icon(
-              Icons.workspace_premium,
-              color: Colors.green,
-              size: 22,
-            ),
-
-            SizedBox(width: 8),
-
-            Text(
-              "Target Belajar Hari Ini",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        const AppSectionTitle(
+          title: "Target Belajar Hari Ini",
+          icon: Icons.workspace_premium,
         ),
 
-        const SizedBox(height: 12),
+        AppSpacing.verticalMd,
 
-        ...learningFlow.take(5).toList().map((target) {
+        ...learningFlow.take(5).map((target) {
           Color statusColor;
 
           switch (target.status) {
@@ -73,7 +77,7 @@ class TargetListCard extends StatelessWidget {
               break;
 
             default:
-              statusColor = Colors.grey;
+              statusColor = AppColors.textSecondary;
           }
 
           return Container(
@@ -104,8 +108,7 @@ class TargetListCard extends StatelessWidget {
 
               title: Text(
                 target.nama,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: AppTextStyle.body.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -135,18 +138,14 @@ class TargetListCard extends StatelessWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(
-                        alpha: 0.12,
-                      ),
-                      borderRadius:
-                      BorderRadius.circular(20),
+                      color: statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       target.status,
@@ -162,7 +161,7 @@ class TargetListCard extends StatelessWidget {
 
                   const Icon(
                     Icons.chevron_right,
-                    color: Colors.grey,
+                    color: AppColors.textSecondary,
                   ),
                 ],
               ),
@@ -170,16 +169,14 @@ class TargetListCard extends StatelessWidget {
           );
         }),
 
-        const SizedBox(height: 8),
+        AppSpacing.verticalSm,
 
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: onAddTarget,
             icon: const Icon(Icons.add),
-            label: const Text(
-              "Tambah Target",
-            ),
+            label: const Text("Tambah Target"),
           ),
         ),
       ],

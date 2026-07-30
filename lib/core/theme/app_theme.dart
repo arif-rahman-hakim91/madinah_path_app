@@ -7,7 +7,7 @@ import 'app_text_style.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData light = ThemeData(
+  static final ThemeData lightTheme = ThemeData(
     useMaterial3: true,
 
     scaffoldBackgroundColor: AppColors.background,
@@ -67,6 +67,18 @@ class AppTheme {
     dividerTheme: const DividerThemeData(
       color: AppColors.divider,
       thickness: 1,
+    ),
+
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.card,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: Colors.grey,
+      selectedLabelStyle: AppTextStyle.caption.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+      unselectedLabelStyle: AppTextStyle.caption,
+      type: BottomNavigationBarType.fixed,
+      elevation: 0,
     ),
 
     snackBarTheme: SnackBarThemeData(

@@ -29,13 +29,17 @@ import '../widgets/target_list_card.dart';
 import '../widgets/weekly_consistency_card.dart';
 import '../widgets/smart_resume_card.dart';
 import '../widgets/target_today_card.dart';
+import '../widgets/common/app_card.dart';
+
+import '../widgets/common/app_loading.dart';
+import '../widgets/evaluation_bottom_sheet.dart';
 
 // Screens
 import 'child_selector_screen.dart';
 import 'guardian_screen.dart';
-import 'hafalan_screen.dart';
+
 import 'ibadah_screen.dart';
-import 'profile_screen.dart';
+
 import 'target_screen.dart';
 import 'history_screen.dart';
 import 'achievement_screen.dart';
@@ -43,7 +47,6 @@ import 'reward_screen.dart';
 import 'statistics_screen.dart';
 
 //core
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_style.dart';
 
@@ -102,14 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Target> todayTargets = [];
 
+  bool isLoading = true;
+
 
 
   @override
   void initState() {
     super.initState();
-
     refreshDashboard();
   }
+
 
   Future<void> loadTargetSummary() async {
     final child = CurrentChildService.currentChild;
@@ -169,10 +174,21 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
   Future<void> refreshDashboard() async {
+
+    setState(() {
+      isLoading = true;
+    });
+
     await loadGuardian();
     await loadProgress();
     await loadTargetSummary();
     await loadTodayTargets();
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> evaluateTarget(
@@ -271,37 +287,56 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> openScreen(Widget screen) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => screen,
+      ),
+    );
+
+    if (!mounted) return;
+
+    await refreshDashboard();
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Madinah Path",style: AppTextStyle.title),
+        title: const Text(
+          "Madinah Path",
+          style: AppTextStyle.title,
+        ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: AppSpacing.page,
-        children: [
-          const SizedBox(height: 20),
+
+        body: isLoading
+            ? const AppLoading()
+            : RefreshIndicator(
+          onRefresh: refreshDashboard,
+          child: ListView(
+            padding: AppSpacing.page,
+            children: [
+              AppSpacing.verticalMd,
 
           GreetingHeader(
             guardian: guardian,
           ),
 
-          const SizedBox(height: 30),
+              AppSpacing.verticalLg,
 
           ActiveChildCard(
             onChangeChild: pilihAnak,
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
-          Card(
-            child: Padding(
-              padding: AppSpacing.page,
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                children: [
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   TargetTodayCard(
                     totalTargetHariIni:
                     totalTargetHariIni,
@@ -317,116 +352,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: (target) {
                       showModalBottomSheet(
                         context: context,
-                        isScrollControlled:
-                        true,
-                        shape:
-                        const RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.vertical(
-                            top:
-                            Radius.circular(
-                              24,
-                            ),
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(24),
                           ),
                         ),
-                        builder: (context) {
-                          return Padding(
-                            padding:
-                            const EdgeInsets.all(
-                                24),
-                            child: Column(
-                              mainAxisSize:
-                              MainAxisSize
-                                  .min,
-                              crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
-                              children: [
-                                Text(
-                                  target.nama,
-                                  style: AppTextStyle.headline,
-                                ),
-
-                                const SizedBox(
-                                    height: 8),
-
-                                Text(
-                                  target.kategori,
-                                  style: AppTextStyle.caption,
-                                ),
-                                AppSpacing.verticalLg,
-
-                                const Text(
-                                  "Bagaimana hasil belajar hari ini?",
-                                  style: AppTextStyle.subtitle,
-                                ),
-
-                                const SizedBox(
-                                    height: 20),
-
-                                _evaluationButton(
-                                  icon: Icons
-                                      .refresh,
-                                  title:
-                                  "Belum Lancar",
-                                  color:
-                                  Colors.orange,
-                                  onTap: () {
-                                    evaluateTarget(
-                                      target,
-                                      "Belum Lancar",
-                                    );
-                                  },
-                                ),
-
-                                _evaluationButton(
-                                  icon: Icons
-                                      .trending_up,
-                                  title: "Cukup",
-                                  color:
-                                  Colors.blue,
-                                  onTap: () {
-                                    evaluateTarget(
-                                      target,
-                                      "Cukup",
-                                    );
-                                  },
-                                ),
-
-                                _evaluationButton(
-                                  icon: Icons
-                                      .check_circle,
-                                  title:
-                                  "Lancar",
-                                  color:
-                                  Colors.green,
-                                  onTap: () {
-                                    evaluateTarget(
-                                      target,
-                                      "Lancar",
-                                    );
-                                  },
-                                ),
-
-                                _evaluationButton(
-                                  icon: Icons
-                                      .workspace_premium,
-                                  title:
-                                  "Mutqin",
-                                  color:
-                                  Colors.purple,
-                                  onTap: () {
-                                    evaluateTarget(
-                                      target,
-                                      "Mutqin",
-                                    );
-                                  },
-                                ),
-
-                                const SizedBox(
-                                    height: 20),
-                              ],
-                            ),
+                        builder: (_) {
+                          return EvaluationBottomSheet(
+                            target: target,
+                            onEvaluate: (status) {
+                              evaluateTarget(
+                                target,
+                                status,
+                              );
+                            },
                           );
                         },
                       );
@@ -455,10 +395,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 20),
                 ],
               ),
-            ),
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
           SummaryCard(
             targetSelesaiHariIni:
@@ -471,14 +410,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ibadahCount,
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
           WeeklyConsistencyCard(
             weeklyProgress:
             weeklyProgress,
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
           StrengthCard(
             strength: strength,
@@ -486,32 +425,14 @@ class _HomeScreenState extends State<HomeScreen> {
             improvement,
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
           SmartResumeCard(
             summary: smartResume,
           ),
 
-          const SizedBox(height: 20),
+              AppSpacing.verticalMd,
 
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        HafalanScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                  Icons.menu_book),
-              label: const Text(
-                  "Buka Halaman Hafalan"),
-            ),
-          ),
           NavigationCard(
             title: "Ibadah Hari Ini",
             description:
@@ -610,22 +531,6 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
 
-          NavigationCard(
-            title: "Profil Anak",
-            description:
-            "Lihat informasi anak dan pengaturan aplikasi.",
-            buttonText: "Buka",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                  const ProfileScreen(),
-                ),
-              );
-            },
-          ),
-
           ProfileGuardianCard(
             guardian: guardian,
             onPressed: () async {
@@ -645,39 +550,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _evaluationButton({
-    required IconData icon,
-    required String title,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      margin:
-      const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        onTap: onTap,
-        leading: CircleAvatar(
-          backgroundColor:
-          color.withValues(alpha: 0.15),
-          child: Icon(
-            icon,
-            color: color,
-          ),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyle.body,
-        ),
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: AppColors.textSecondary,
-        ),
+        ],),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'home_screen.dart';
+import 'main_screen.dart';
 import '../core/theme/app_colors.dart';
 
 
@@ -148,7 +148,7 @@ class WelcomeScreen extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => const MainScreen(),
                         ),
                       );
                     },
