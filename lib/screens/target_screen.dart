@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/target.dart';
 import '../repositories/target_repository.dart';
 import '../services/current_child_service.dart';
+import '../widgets/target/target_form_dialog.dart';
 
 class TargetScreen extends StatefulWidget {
   const TargetScreen({super.key});
@@ -103,12 +104,11 @@ class _TargetScreenState extends State<TargetScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Hapus Target"),
-          content: Text(
-            "Apakah Anda yakin ingin menghapus '${target.nama}'?",
-          ),
-          actions: [
+        return TargetFormDialog(
+            target: target,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context, false);
@@ -121,7 +121,7 @@ class _TargetScreenState extends State<TargetScreen> {
               },
               child: const Text("Hapus"),
             ),
-          ],
+          ],),
         );
       },
     );
