@@ -4,6 +4,8 @@ import '../models/target.dart';
 import '../repositories/target_repository.dart';
 import '../services/current_child_service.dart';
 import '../widgets/target/target_form_dialog.dart';
+import '../widgets/common/empty_state.dart';
+import '../widgets/common/section_title.dart';
 
 class TargetScreen extends StatefulWidget {
   const TargetScreen({super.key});
@@ -16,6 +18,8 @@ class _TargetScreenState extends State<TargetScreen> {
   final repository = TargetRepository();
 
   List<Target> targets = [];
+  String searchQuery = "";
+  String selectedCategory = "Semua";
 
   @override
   void initState() {
@@ -88,6 +92,20 @@ class _TargetScreenState extends State<TargetScreen> {
     if (targets.isEmpty) return 0;
 
     return completedTarget / targets.length;
+  }
+
+  List<Target> get filteredTargets {
+    return targets.where((target) {
+      final matchSearch = target.nama
+          .toLowerCase()
+          .contains(searchQuery.toLowerCase());
+
+      final matchCategory =
+          selectedCategory == "Semua" ||
+              target.kategori == selectedCategory;
+
+      return matchSearch && matchCategory;
+    }).toList();
   }
 
   Future<void> addTarget() async {
@@ -184,7 +202,36 @@ class _TargetScreenState extends State<TargetScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 12),
+
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        "Semua",
+                        "Hafalan",
+                        "Murajaah",
+                        "Hadits",
+                        "Fiqih",
+                        "Adab",
+                      ].map((kategori) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(kategori),
+                            selected: selectedCategory == kategori,
+                            onSelected: (_) {
+                              setState(() {
+                                selectedCategory = kategori;
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
 
                   DropdownButtonFormField<String>(
                     initialValue: kategori,
@@ -449,18 +496,30 @@ class _TargetScreenState extends State<TargetScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+
+          TextField(
+            decoration: const InputDecoration(
+              hintText: "Cari target...",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              setState(() {
+                searchQuery = value;
+              });
+            },
+          ),
+
+          const SizedBox(height: 20),
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Target Hari Ini",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SectionTitle(
+                    title: "Target Hari Ini",
                   ),
                   const SizedBox(height: 20),
                   ClipRRect(
@@ -483,11 +542,23 @@ class _TargetScreenState extends State<TargetScreen> {
                   const SizedBox(height: 20),
                   if (targets.isEmpty)
                     const Center(
-                      child: Text(
-                        "Belum ada target hari ini.",
+                      child: EmptyState(
+                        icon: Icons.flag_outlined,
+                        title: "Belum Ada Target",
+                        description:
+                        "Tambahkan target pertama untuk mulai belajar.",
+                      ),
+                    )
+                  else if (filteredTargets.isEmpty)
+                    const Center(
+                      child: EmptyState(
+                        icon: Icons.search_off,
+                        title: "Target Tidak Ditemukan",
+                        description:
+                        "Coba gunakan kata kunci lain atau ubah filter pencarian.",
                       ),
                     ),
-                  ...targets.map(
+                  ...filteredTargets.map(
                         (target) => Card(
                       margin: const EdgeInsets.only(bottom: 10),
                       child: ListTile(

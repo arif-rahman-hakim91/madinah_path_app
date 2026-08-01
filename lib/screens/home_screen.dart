@@ -40,6 +40,7 @@ import '../widgets/home/dashboard_learning_section.dart';
 import '../widgets/home/dashboard_summary_section.dart';
 import '../widgets/home/dashboard_navigation_section.dart';
 import '../widgets/home/profile_section.dart';
+import '../widgets/home/achievement_section.dart';
 
 //controllers
 import '../controllers/dashboard_controller.dart';
@@ -331,6 +332,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               AppSpacing.verticalMd,
+
+              const AchievementSection(),
 
               DashboardNavigationSection(
                 children: [
