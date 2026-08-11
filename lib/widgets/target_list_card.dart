@@ -45,22 +45,47 @@ class TargetListCard extends StatelessWidget {
       children: [
         AppSpacing.verticalLg,
 
-        const AppSectionTitle(
-          title: "Target Belajar Hari Ini",
-          icon: Icons.workspace_premium,
+        Row(
+          children: [
+            const Expanded(
+              child: AppSectionTitle(
+                title: "Target Hari Ini",
+                icon: Icons.workspace_premium,
+              ),
+            ),
+
+            TextButton.icon(
+              onPressed: onAddTarget,
+              icon: const Icon(
+                Icons.add,
+                size: 18,
+              ),
+              label: const Text("Tambah"),
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 0,
+                ),
+              ),
+            ),
+          ],
         ),
 
         AppSpacing.verticalMd,
 
         ...learningFlow.take(5).map((target) {
           Color statusColor;
+          String statusLabel = target.status;
 
           switch (target.status) {
             case "Belum Lancar":
+              statusLabel = "Perdana";
               statusColor = Colors.orange;
               break;
 
             case "Belum Dipelajari":
+              statusLabel = "Ulang";
               statusColor = Colors.red;
               break;
 
@@ -81,7 +106,7 @@ class TargetListCard extends StatelessWidget {
           }
 
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 5),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -90,9 +115,14 @@ class TargetListCard extends StatelessWidget {
               ),
             ),
             child: ListTile(
+              dense: true,
+              visualDensity: const VisualDensity(
+                vertical: -3,
+              ),
               onTap: () => onTap(target),
 
               leading: CircleAvatar(
+                radius: 16,
                 backgroundColor: target.isCompleted
                     ? Colors.green.shade100
                     : Colors.grey.shade200,
@@ -100,39 +130,47 @@ class TargetListCard extends StatelessWidget {
                   target.isCompleted
                       ? Icons.check
                       : Icons.menu_book,
+                  size: 16,
                   color: target.isCompleted
                       ? Colors.green
                       : Colors.grey,
                 ),
               ),
 
-              title: Text(
-                target.nama,
-                style: AppTextStyle.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    target.kategori,
-                    style: TextStyle(
-                      color: Colors.green.shade700,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      target.nama,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.body.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
+
+                  const SizedBox(width: 8),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                      vertical: 0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      target.kategori,
+                      style: TextStyle(
+                        color: Colors.green.shade700,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               trailing: Row(
@@ -140,19 +178,21 @@ class TargetListCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+                      horizontal: 2,
+                      vertical: 0,
                     ),
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      target.status,
+                      statusLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: statusColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
                       ),
                     ),
                   ),
@@ -169,16 +209,6 @@ class TargetListCard extends StatelessWidget {
           );
         }),
 
-        AppSpacing.verticalSm,
-
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: onAddTarget,
-            icon: const Icon(Icons.add),
-            label: const Text("Tambah Target"),
-          ),
-        ),
       ],
     );
   }

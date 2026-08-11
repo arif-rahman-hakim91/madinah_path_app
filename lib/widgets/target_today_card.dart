@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_radius.dart';
-import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_style.dart';
 
 class TargetTodayCard extends StatelessWidget {
@@ -21,7 +20,10 @@ class TargetTodayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: AppSpacing.card,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 2,
+        vertical: 1,
+      ),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: AppRadius.mdRadius,
@@ -31,87 +33,59 @@ class TargetTodayCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.today,
-                color: AppColors.primary,
-                size: 28,
+              const Text(
+                "Progress",
+                style: AppTextStyle.subtitle,
               ),
 
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
 
-              const Expanded(
-                child: Text(
-                  "Target Hari Ini",
-                  style: AppTextStyle.title,
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: LinearProgressIndicator(
+                    value: totalTargetHariIni == 0
+                        ? 0
+                        : targetSelesaiHariIni / totalTargetHariIni,
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(30),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      totalTargetHariIni == 0
+                          ? AppColors.progressEmpty
+                          : (targetSelesaiHariIni / totalTargetHariIni) >= 0.8
+                          ? AppColors.progressHigh
+                          : (targetSelesaiHariIni / totalTargetHariIni) >= 0.5
+                          ? AppColors.progressMedium
+                          : AppColors.progressLow,
+                    ),
+                  ),
                 ),
               ),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "$targetSelesaiHariIni/$totalTargetHariIni",
-                    style: AppTextStyle.subtitle,
-                  ),
+              const SizedBox(width: 12),
 
-                  Text(
-                    totalTargetHariIni == 0
-                        ? "0%"
-                        : "${((targetSelesaiHariIni / totalTargetHariIni) * 100).toStringAsFixed(0)}%",
-                    style: TextStyle(
-                      color: Colors.green.shade700,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              Text(
+                totalTargetHariIni == 0
+                    ? "0%"
+                    : "${((targetSelesaiHariIni / totalTargetHariIni) * 100).toStringAsFixed(0)}%",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
 
-          ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: LinearProgressIndicator(
-              value: totalTargetHariIni == 0
-                  ? 0
-                  : targetSelesaiHariIni / totalTargetHariIni,
-              minHeight: 10,
-              borderRadius: BorderRadius.circular(30),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                totalTargetHariIni == 0
-                    ? AppColors.progressEmpty
-                    : (targetSelesaiHariIni / totalTargetHariIni) >= 0.8
-                    ? AppColors.progressHigh
-                    : (targetSelesaiHariIni / totalTargetHariIni) >= 0.5
-                    ? AppColors.progressMedium
-                    : AppColors.progressLow
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            totalTargetHariIni == 0
-                ? "Belum ada target hari ini."
-                : "🎯 $totalTargetHariIni target belajar hari ini.",
-            style: AppTextStyle.caption,
-          ),
-
-          if (learningMessage != null &&
-              learningMessage!.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
 
             Text(
               learningMessage!,
-              style: AppTextStyle.body.copyWith(
-                color: AppColors.success,
-                fontWeight: FontWeight.w600,
+              style: AppTextStyle.caption.copyWith(
+                color: AppColors.textSecondary,
+                fontStyle: FontStyle.italic,
               ),
             ),
           ],
-        ],
       ),
     );
   }

@@ -14,6 +14,8 @@ import '../services/current_child_service.dart';
 import '../services/learning_engine.dart';
 import '../services/achievement_engine.dart';
 import '../services/point_engine.dart';
+import '../services/achievement_service.dart';
+import '../services/reward_service.dart';
 
 // Widgets
 import '../widgets/navigation_card.dart';
@@ -22,25 +24,20 @@ import '../widgets/evaluation_bottom_sheet.dart';
 
 // Screens
 import 'child_selector_screen.dart';
-import 'guardian_screen.dart';
 import 'ibadah_screen.dart';
 import 'target_screen.dart';
-import 'history_screen.dart';
 import 'achievement_screen.dart';
 import 'reward_screen.dart';
 import 'statistics_screen.dart';
+import 'jadwal_sekolah_screen.dart';
 
 //core
 import '../core/theme/app_spacing.dart';
-import '../core/theme/app_text_style.dart';
 
 //home
 import '../widgets/home/dashboard_header_section.dart';
 import '../widgets/home/dashboard_learning_section.dart';
-import '../widgets/home/dashboard_summary_section.dart';
 import '../widgets/home/dashboard_navigation_section.dart';
-import '../widgets/home/profile_section.dart';
-import '../widgets/home/achievement_section.dart';
 
 //controllers
 import '../controllers/dashboard_controller.dart';
@@ -66,6 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final LearningEngine learningEngine =
   LearningEngine();
 
+  final AchievementService achievementService =
+  AchievementService();
+
+  final RewardService rewardService =
+  RewardService();
+
   List<Target> learningFlow = [];
 
   String learningMessage = "";
@@ -81,6 +84,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int totalTargetHariIni = 0;
 
   int targetSelesaiHariIni = 0;
+
+  int achievementCount = 0;
+
+  int rewardPoint = 0;
 
   List<Target> todayTargets = [];
 
@@ -100,6 +107,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     refreshDashboard();
+  }
+
+  Future<void> loadAchievementAndReward() async {
+    final achievements = await achievementService.getAll();
+    final points = await rewardService.getTotalPoint();
+
+    if (!mounted) return;
+
+    setState(() {
+      achievementCount = achievements.length;
+      rewardPoint = points;
+    });
   }
 
 
@@ -142,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
       loadProgress(),
       loadTargetSummary(),
       loadTodayTargets(),
+      loadAchievementAndReward(),
     ]);
 
     if (!mounted) return;
@@ -254,11 +274,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 10,
+        centerTitle: true,
         title: const Text(
           "Madinah Path",
-          style: AppTextStyle.title,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        centerTitle: true,
       ),
 
         body: isLoading
@@ -268,14 +292,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView(
             padding: AppSpacing.page,
             children: [
-              AppSpacing.verticalMd,
+              const SizedBox(height: 4),
 
               DashboardHeaderSection(
                 guardian: guardian,
                 onChangeChild: pilihAnak,
               ),
 
-              AppSpacing.verticalMd,
+              const SizedBox(height: 2),
 
               DashboardLearningSection(
                 totalTargetHariIni: totalTargetHariIni,
@@ -318,114 +342,82 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
 
-              AppSpacing.verticalMd,
+              const SizedBox(height: 2),
 
-              DashboardSummarySection(
-                targetSelesaiHariIni: targetSelesaiHariIni,
-                totalTargetHariIni: totalTargetHariIni,
-                hafalanCount: dashboardData.hafalanCount,
-                ibadahCount: dashboardData.ibadahCount,
-                weeklyProgress: dashboardData.weeklyProgress,
-                strength: dashboardData.strength,
-                improvement: dashboardData.improvement,
-                smartResume: smartResume,
-              ),
+              //ini sebelunya isi dashboard_summary_section.dart
 
-              AppSpacing.verticalMd,
-
-              const AchievementSection(),
 
               DashboardNavigationSection(
                 children: [
                   NavigationCard(
-                    title: "Ibadah Hari Ini",
-                    description: "Yuk isi checklist ibadah hari ini",
-                    buttonText: "Buka",
-                    onPressed: () {
-                      openScreen(const IbadahScreen());
-                    },
-                  ),
-
-                  NavigationCard(
-                    title: "Target Harian",
-                    description:
-                    "Kelola target belajar untuk Autopilot Learning Engine.",
-                    buttonText: "Buka",
-                    onPressed: () async {
-                      final result =
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                          const TargetScreen(),
-                        ),
-                      );
-
-                      if (result == true) {
-                        await refreshDashboard();
-
-                        if (!mounted) return;
-                      }
-                    },
-                  ),
-
-                  NavigationCard(
-                    title: "Riwayat Belajar",
-                    description:
-                    "Lihat aktivitas belajar sebelumnya.",
-                    buttonText: "Buka",
-                    onPressed: () {
-                      openScreen(const HistoryScreen());
-                    },
-                  ),
-
-                  NavigationCard(
                     title: "Achievement",
-                    description: "Lihat semua pencapaian belajar.",
-                    buttonText: "Buka",
+                    description: achievementCount.toString(),
+                    icon: Icons.emoji_events_outlined,
                     onPressed: () {
-                      openScreen(const AchievementScreen());
+                      openScreen(
+                        const AchievementScreen(),
+                      );
+                    },
+                  ),
+
+                  NavigationCard(
+                    title: "Hafalan Hari Ini",
+                    description: "",
+                    icon: Icons.menu_book_outlined,
+                    onPressed: () {
+                      openScreen(
+                        const TargetScreen(),
+                      );
+                    },
+                  ),
+
+                  NavigationCard(
+                    title: "Ibadah Hari Ini",
+                    description: "",
+                    icon: Icons.mosque_outlined,
+                    onPressed: () {
+                      openScreen(
+                        const IbadahScreen(),
+                      );
                     },
                   ),
 
                   NavigationCard(
                     title: "Reward",
-                    description:
-                    "Lihat total poin dan riwayat reward.",
-                    buttonText: "Buka",
+                    description: rewardPoint.toString(),
+                    icon: Icons.card_giftcard_outlined,
                     onPressed: () {
-                      openScreen(const RewardScreen());
+                      openScreen(
+                        const RewardScreen(),
+                      );
                     },
                   ),
 
                   NavigationCard(
                     title: "Statistik",
-                    description: "Lihat perkembangan belajar anak.",
-                    buttonText: "Buka",
+                    description: "",
+                    icon: Icons.bar_chart_outlined,
                     onPressed: () {
-                      openScreen(const StatisticsScreen());
+                      openScreen(
+                        const StatisticsScreen(),
+                      );
+                    },
+                  ),
+
+                  NavigationCard(
+                    title: "Jadwal Sekolah",
+                    description: "Belum ada jadwal",
+                    icon: Icons.calendar_today_outlined,
+                    onPressed: () {
+                      openScreen(
+                        const JadwalSekolahScreen(),
+                      );
                     },
                   ),
                 ],
               ),
 
-              ProfileSection(
-                guardian: guardian,
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const GuardianScreen(),
-                    ),
-                  );
 
-                  if (result == true) {
-                    await refreshDashboard();
-
-                    if (!mounted) return;
-                  }
-                },
-              ),
         ],),
       ),
     );

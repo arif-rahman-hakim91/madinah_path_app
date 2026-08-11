@@ -1,49 +1,83 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme/app_spacing.dart';
-import '../core/theme/app_text_style.dart';
-import 'common/app_button.dart';
 import 'common/app_card.dart';
 
 class NavigationCard extends StatelessWidget {
   final String title;
   final String description;
-  final String buttonText;
   final VoidCallback onPressed;
+  final IconData icon;
 
   const NavigationCard({
     super.key,
     required this.title,
     required this.description,
-    required this.buttonText,
     required this.onPressed,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyle.title,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          height: 52,
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 22,
+                color: Colors.green.shade700,
+              ),
+
+              const SizedBox(width: 8),
+
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    if (description.trim().isNotEmpty)
+                      Text(
+                        description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 4),
+
+              const Icon(
+                Icons.chevron_right,
+                size: 17,
+                color: Colors.grey,
+              ),
+            ],
           ),
-
-          AppSpacing.verticalSm,
-
-          Text(
-            description,
-            style: AppTextStyle.body,
-          ),
-
-          AppSpacing.verticalMd,
-
-          AppButton(
-            label: buttonText,
-            onPressed: onPressed,
-          ),
-        ],
+        ),
       ),
     );
   }

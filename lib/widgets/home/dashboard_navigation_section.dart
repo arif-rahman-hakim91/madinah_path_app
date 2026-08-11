@@ -10,8 +10,22 @@ class DashboardNavigationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: children,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth =
+            (constraints.maxWidth - 8) / 2;
+
+        return Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: children.map((child) {
+            return SizedBox(
+              width: itemWidth,
+              child: child,
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

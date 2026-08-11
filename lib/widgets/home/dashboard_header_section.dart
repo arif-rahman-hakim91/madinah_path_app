@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/guardian.dart';
-import '../../core/theme/app_spacing.dart';
-import '../active_child_card.dart';
-import '../greeting_header.dart';
+import 'compact_header.dart';
 
 class DashboardHeaderSection extends StatelessWidget {
   final Guardian? guardian;
@@ -19,13 +17,12 @@ class DashboardHeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GreetingHeader(
+        CompactHeader(
           guardian: guardian,
-        ),
-        AppSpacing.verticalLg,
-        ActiveChildCard(
           onChangeChild: onChangeChild,
         ),
+
+        const SizedBox(height: 0),
       ],
     );
   }

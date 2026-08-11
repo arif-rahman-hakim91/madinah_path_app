@@ -6,10 +6,10 @@ import '../models/target.dart';
 class TargetRepository {
   final dbHelper = DatabaseHelper.instance;
 
-  Future<void> add(Target target) async {
+  Future<int> add(Target target) async {
     final db = await dbHelper.database;
 
-    await db.insert(
+    return await db.insert(
       'target',
       target.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -69,6 +69,27 @@ class TargetRepository {
     );
 
     await update(updatedTarget);
+  }
+
+  Future<Target?> findDuplicate({
+    required int childId,
+    required String nama,
+    required String kategori,
+    required DateTime targetDate,
+  }) async {
+    final targets = await getByDate(
+      childId: childId,
+      date: targetDate,
+    );
+
+    for (final target in targets) {
+      if (target.nama == nama &&
+          target.kategori == kategori) {
+        return target;
+      }
+    }
+
+    return null;
   }
 
   Future<void> delete(int id) async {

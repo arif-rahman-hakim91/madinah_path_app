@@ -4,7 +4,6 @@ import '../../models/achievement.dart';
 import '../../screens/achievement_screen.dart';
 import '../../services/achievement_service.dart';
 import '../common/app_card.dart';
-import '../common/app_section_title.dart';
 
 class AchievementSection extends StatefulWidget {
   const AchievementSection({super.key});
@@ -17,7 +16,8 @@ class AchievementSection extends StatefulWidget {
 class _AchievementSectionState
     extends State<AchievementSection> {
 
-  final AchievementService service = AchievementService();
+  final AchievementService service =
+  AchievementService();
 
   List<Achievement> achievements = [];
 
@@ -40,46 +40,66 @@ class _AchievementSectionState
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const AppSectionTitle(
-            title: "Achievement",
-            icon: Icons.emoji_events,
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            "${achievements.length} Achievement",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            achievements.isEmpty
-                ? "Belum ada achievement."
-                : achievements.first.title,
-          ),
-
-          const SizedBox(height: 16),
-
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AchievementScreen(),
-                  ),
-                );
-              },
-              child: const Text("Lihat Semua"),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+              const AchievementScreen(),
             ),
-          ),
-        ],
+          );
+        },
+        child: Row(
+          children: [
+            const Icon(
+              Icons.emoji_events,
+              color: Colors.amber,
+              size: 22,
+            ),
+
+            const SizedBox(width: 10),
+
+            const Text(
+              "Achievement",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const Spacer(),
+
+            Container(
+              padding:
+              const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius:
+                BorderRadius.circular(20),
+              ),
+              child: Text(
+                achievements.length.toString(),
+                style: TextStyle(
+                  color: Colors.amber.shade800,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

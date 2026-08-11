@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_spacing.dart';
+
 import '../../models/target.dart';
 import '../common/app_card.dart';
 import '../target_list_card.dart';
@@ -41,7 +41,6 @@ class DashboardLearningSection extends StatelessWidget {
             onTap: onTap,
             onAddTarget: onAddTarget,
           ),
-          AppSpacing.verticalMd,
         ],
       ),
     );

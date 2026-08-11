@@ -23,7 +23,7 @@ final path = join(dbPath, filePath);
 
 return await openDatabase(
 path,
-version: 14,
+version: 15,
 onCreate: _createDB,
 onUpgrade: _onUpgrade,
 );
@@ -346,6 +346,22 @@ Future<void> _onUpgrade(
       FOREIGN KEY (childId) REFERENCES child(id),
       FOREIGN KEY (targetId) REFERENCES target(id)
     )
+  ''');
+  }
+
+  if (oldVersion < 15) {
+    await db.execute('''
+  CREATE TABLE IF NOT EXISTS jadwal_sekolah(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    childId INTEGER NOT NULL,
+    tanggal TEXT NOT NULL,
+    kategori TEXT NOT NULL,
+    judul TEXT NOT NULL,
+    deskripsi TEXT,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    FOREIGN KEY (childId) REFERENCES child(id)
+  )
   ''');
   }
 }

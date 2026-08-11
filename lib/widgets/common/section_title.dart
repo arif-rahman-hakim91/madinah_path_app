@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_style.dart';
 
 class SectionTitle extends StatelessWidget {
   final String title;
-  final Widget? trailing;
+  final IconData? icon;
 
   const SectionTitle({
     super.key,
     required this.title,
-    this.trailing,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
-        AppSpacing.verticalMd,
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: AppTextStyle.title,
-              ),
-            ),
-            if (trailing != null) trailing!,
-          ],
+        if (icon != null) ...[
+          Icon(
+            icon,
+            color: AppColors.primary,
+            size: 22,
+          ),
+          const SizedBox(width: 8),
+        ],
+
+        Text(
+          title,
+          style: AppTextStyle.subtitle,
         ),
       ],
     );
