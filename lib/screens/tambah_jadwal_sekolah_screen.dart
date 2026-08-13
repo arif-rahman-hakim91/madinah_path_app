@@ -249,6 +249,39 @@ class _TambahJadwalSekolahScreenState
     });
   }
 
+  DateTime? tanggalUntukHari(
+      String? hari,
+      DateTime tanggalMulai,
+      ) {
+    if (hari == null) {
+      return tanggalMulai;
+    }
+
+    const urutanHari = {
+      "Senin": 0,
+      "Selasa": 1,
+      "Rabu": 2,
+      "Kamis": 3,
+      "Jumat": 4,
+      "Sabtu": 5,
+      "Ahad": 6,
+    };
+
+    final targetIndex = urutanHari[hari];
+
+    if (targetIndex == null) {
+      return tanggalMulai;
+    }
+
+    return DateTime(
+      tanggalMulai.year,
+      tanggalMulai.month,
+      tanggalMulai.day,
+    ).add(
+      Duration(days: targetIndex),
+    );
+  }
+
   Future<void> simpanHasilScan() async {
     final child = CurrentChildService.currentChild;
 
@@ -275,11 +308,34 @@ class _TambahJadwalSekolahScreenState
     try {
       final now = DateTime.now();
 
+      if (tanggal == null) {
+        setState(() {
+          isSaving = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Pilih tanggal mulai jadwal terlebih dahulu.",
+            ),
+          ),
+        );
+
+        return;
+      }
+
       for (final item in hasilParser) {
+        final targetDate = tanggalUntukHari(
+          item.hari,
+          tanggal!,
+        ) ?? tanggal!;
+
+        item.tanggal = targetDate;
+
         await repository.add(
           JadwalSekolah(
             childId: child.id!,
-            tanggal: tanggal ?? now,
+            tanggal: targetDate,
             kategori: item.kategori,
             judul: item.judul,
             deskripsi: null,
@@ -287,9 +343,8 @@ class _TambahJadwalSekolahScreenState
             updatedAt: now,
           ),
         );
-        if (item.jadikanTarget) {
-          final targetDate = item.tanggal ?? tanggal!;
 
+        if (item.jadikanTarget) {
           final existingTarget =
           await targetRepository.findDuplicate(
             childId: child.id!,
@@ -427,8 +482,173 @@ class _TambahJadwalSekolahScreenState
     Navigator.pop(context, true);
   }
 
+  List<Widget> _buildGroupedResults() {
+    const urutanHari = [
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+      "Ahad",
+      "Tanpa Hari",
+    ];
+
+    final grouped =
+    <String, List<JadwalParserItem>>{};
+
+    for (final item in hasilParser) {
+      final hari = item.hari ?? "Tanpa Hari";
+
+      grouped.putIfAbsent(
+        hari,
+            () => [],
+      );
+
+      grouped[hari]!.add(item);
+    }
+
+    final widgets = <Widget>[];
+
+    for (final hari in urutanHari) {
+      final items = grouped[hari];
+
+      if (items == null || items.isEmpty) {
+        continue;
+      }
+
+      final tanggalHari = items.first.tanggal;
+
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+          ),
+          child: Text(
+            tanggalHari == null
+                ? hari
+                : "$hari • "
+                "${tanggalHari.day}/"
+                "${tanggalHari.month}/"
+                "${tanggalHari.year}",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+
+      for (final item in items) {
+        widgets.add(
+          Card(
+            margin: const EdgeInsets.only(
+              bottom: 8,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.menu_book_outlined,
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.judul,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        TextButton(
+                          onPressed: () {
+                            editKategori(item);
+                          },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            alignment:
+                            Alignment.centerLeft,
+                          ),
+                          child: Text(
+                            item.kategori,
+                          ),
+                        ),
+
+                        CheckboxListTile(
+                          contentPadding:
+                          EdgeInsets.zero,
+                          dense: true,
+                          visualDensity:
+                          VisualDensity.compact,
+                          title: const Text(
+                            "Jadikan target rumah",
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                          value: item.jadikanTarget,
+                          onChanged: (value) {
+                            setState(() {
+                              item.jadikanTarget =
+                                  value ?? false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                    ),
+                    onPressed: () {
+                      editMateri(item);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      widgets.add(
+        const SizedBox(height: 8),
+      );
+    }
+
+    return widgets;
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final Map<String, List<JadwalParserItem>> groupedResults = {};
+
+    for (final item in hasilParser) {
+      final hari = item.hari ?? "Tanpa Hari";
+
+      groupedResults.putIfAbsent(
+        hari,
+            () => [],
+      );
+
+      groupedResults[hari]!.add(item);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tambah Jadwal"),
@@ -523,95 +743,26 @@ class _TambahJadwalSekolahScreenState
                     const SizedBox(height: 16),
 
                     const Text(
-                      "Materi yang Ditemukan",
+                      "Hasil Jadwal",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 18,
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
 
-                    ...hasilParser.map(
-                          (item) {
-                        return Card(
-                          margin: const EdgeInsets.only(
-                            bottom: 8,
-                          ),
-                          child: ListTile(
-                            dense: true,
-
-                            leading: const Icon(
-                              Icons.menu_book_outlined,
-                            ),
-
-                            title: Text(
-                              item.judul,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    editKategori(item);
-                                  },
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    alignment: Alignment.centerLeft,
-                                  ),
-                                  child: Text(
-                                    item.kategori,
-                                  ),
-                                ),
-
-                                if (item.tanggal != null)
-                                  Text(
-                                    "${item.tanggal!.day}/"
-                                        "${item.tanggal!.month}/"
-                                        "${item.tanggal!.year}",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-
-                                CheckboxListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  dense: true,
-                                  visualDensity: VisualDensity.compact,
-                                  title: const Text(
-                                    "Jadikan target rumah",
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  value: item.jadikanTarget,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      item.jadikanTarget = value ?? false;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-
-                            trailing: IconButton(
-                              icon: const Icon(
-                                Icons.edit_outlined,
-                                size: 18,
-                              ),
-                              onPressed: () {
-                                editMateri(item);
-                              },
-                            ),
-                          ),
-                        );
-                      },
+                    const Text(
+                      "Periksa materi sebelum disimpan.",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey,
+                      ),
                     ),
+
+                    const SizedBox(height: 12),
+
+                    ..._buildGroupedResults(),
 
                     const SizedBox(height: 8),
 
@@ -631,7 +782,6 @@ class _TambahJadwalSekolahScreenState
                         ),
                       ),
                     ),
-
                   ],
 
                   if (hasilScan != null) ...[

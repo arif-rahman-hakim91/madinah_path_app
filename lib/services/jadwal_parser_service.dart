@@ -10,6 +10,16 @@ class JadwalParserService {
     "Kegiatan",
   ];
 
+  static const List<String> hariBawaan = [
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+    "Ahad",
+  ];
+
   List<JadwalParserItem> parse(String text) {
     final lines = text
         .split('\n')
@@ -20,26 +30,29 @@ class JadwalParserService {
     final List<JadwalParserItem> hasil = [];
 
     DateTime? tanggalSekarang;
+    String? hariSekarang;
+
     String? kategoriSekarang;
-    final List<String> materi = [];
+    String? judulSekarang;
 
     void simpanMateri() {
-      if (tanggalSekarang == null ||
-          kategoriSekarang == null ||
-          materi.isEmpty) {
-        materi.clear();
+      if (kategoriSekarang == null ||
+          judulSekarang == null ||
+          judulSekarang!.trim().isEmpty) {
         return;
       }
 
       hasil.add(
         JadwalParserItem(
           tanggal: tanggalSekarang,
-          kategori: kategoriSekarang,
-          judul: materi.join(' '),
+          hari: hariSekarang,
+          kategori: kategoriSekarang!,
+          judul: judulSekarang!.trim(),
         ),
       );
 
-      materi.clear();
+      kategoriSekarang = null;
+      judulSekarang = null;
     }
 
     for (final line in lines) {
@@ -47,32 +60,85 @@ class JadwalParserService {
 
       if (tanggal != null) {
         simpanMateri();
-
         tanggalSekarang = tanggal;
-        kategoriSekarang = null;
-
         continue;
       }
 
-      final kategori = _cariKategori(line);
+      final hari = _cariHari(line);
 
-      if (kategori != null) {
+      if (hari != null) {
+        simpanMateri();
+        hariSekarang = hari;
+        continue;
+      }
+
+      final kategoriInline = _cariKategoriInline(line);
+
+      if (kategoriInline != null) {
         simpanMateri();
 
-        kategoriSekarang = kategori;
+        kategoriSekarang = kategoriInline.kategori;
+        judulSekarang = kategoriInline.judul;
 
         continue;
       }
 
-      if (tanggalSekarang != null &&
-          kategoriSekarang != null) {
-        materi.add(line);
+      final kategoriBaris = _cariKategori(line);
+
+      if (kategoriBaris != null) {
+        simpanMateri();
+
+        kategoriSekarang = kategoriBaris;
+        judulSekarang = null;
+
+        continue;
+      }
+
+      if (kategoriSekarang != null) {
+        if (judulSekarang == null) {
+          judulSekarang = line;
+        } else {
+          judulSekarang =
+          "$judulSekarang $line";
+        }
       }
     }
 
     simpanMateri();
 
+    hasil.sort(
+          (a, b) {
+        return _urutanHari(a.hari)
+            .compareTo(_urutanHari(b.hari));
+      },
+    );
+
     return hasil;
+  }
+
+  String? _cariHari(String line) {
+    final normalized = line
+        .toLowerCase()
+        .replaceAll(':', '')
+        .trim();
+
+    for (final hari in hariBawaan) {
+      if (normalized == hari.toLowerCase()) {
+        return hari;
+      }
+    }
+
+    return null;
+  }
+
+  int _urutanHari(String? hari) {
+    if (hari == null) {
+      return 99;
+    }
+
+    final index = hariBawaan.indexOf(hari);
+
+    return index == -1 ? 99 : index;
   }
 
   DateTime? _cariTanggal(String line) {
@@ -95,6 +161,7 @@ class JadwalParserService {
 
     final hari = int.parse(match.group(1)!);
     final namaBulan = match.group(2)!;
+
     final tahun = match.group(3) == null
         ? DateTime.now().year
         : int.parse(match.group(3)!);
@@ -127,6 +194,71 @@ class JadwalParserService {
     );
   }
 
+  _KategoriHasil? _cariKategoriInline(String line) {
+    final normalized = line.trim();
+
+    final match = RegExp(
+      r"^(hafalan|iqra|mengenal huruf|mengenal angka|doa|do'a|mufradat|adab|kegiatan)\s*:\s*(.*)$",
+      caseSensitive: false,
+    ).firstMatch(normalized);
+
+    if (match == null) {
+      return null;
+    }
+
+    final label = match.group(1)!
+        .toLowerCase()
+        .trim();
+
+    final judul = match.group(2)!
+        .trim();
+
+    String kategori;
+
+    switch (label) {
+      case "hafalan":
+        kategori = "Hafalan";
+        break;
+
+      case "iqra":
+        kategori = "Iqra";
+        break;
+
+      case "mengenal huruf":
+        kategori = "Huruf";
+        break;
+
+      case "mengenal angka":
+        kategori = "Angka";
+        break;
+
+      case "doa":
+      case "do'a":
+        kategori = "Doa";
+        break;
+
+      case "mufradat":
+        kategori = "Mufradat";
+        break;
+
+      case "adab":
+        kategori = "Adab";
+        break;
+
+      case "kegiatan":
+        kategori = "Kegiatan";
+        break;
+
+      default:
+        return null;
+    }
+
+    return _KategoriHasil(
+      kategori: kategori,
+      judul: judul,
+    );
+  }
+
   String? _cariKategori(String line) {
     final normalized = line
         .toLowerCase()
@@ -143,14 +275,28 @@ class JadwalParserService {
   }
 }
 
+class _KategoriHasil {
+  final String kategori;
+  final String judul;
+
+  const _KategoriHasil({
+    required this.kategori,
+    required this.judul,
+  });
+}
+
 class JadwalParserItem {
   DateTime? tanggal;
+
+  final String? hari;
+
   String kategori;
   String judul;
   bool jadikanTarget;
 
   JadwalParserItem({
     this.tanggal,
+    this.hari,
     required this.kategori,
     required this.judul,
     this.jadikanTarget = false,
